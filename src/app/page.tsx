@@ -1,65 +1,90 @@
-import Image from "next/image";
+'use client';
+
+import { useEffect } from 'react';
+import TypingArea from '@/components/TypingArea';
+import Settings from '@/components/Settings';
+import Results from '@/components/Results';
+import { useTypingStore } from '@/store/typingStore';
 
 export default function Home() {
+  const { status, resetTest } = useTypingStore();
+
+  // Handle Tab key untuk restart
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        resetTest();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [resetTest]);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="space-y-8">
+      {/* Heading SEO-friendly (tersembunyi secara visual tapi bisa dibaca search engine) */}
+      <h1 className="sr-only">
+        TypeMaster - Tes Mengetik dengan Analitik Mendalam
+      </h1>
+
+      {/* Settings */}
+      {status !== 'running' && (
+        <section aria-label="Pengaturan Test">
+          <Settings />
+        </section>
+      )}
+
+      {/* Area Mengetik atau Hasil */}
+      <section aria-label="Area Tes Mengetik">
+        {status === 'finished' ? <Results /> : <TypingArea />}
+      </section>
+
+      {/* Bagian fitur untuk SEO (ditampilkan hanya saat idle) */}
+      {status === 'idle' && (
+        <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <article className="glass-card rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-yellow-400/20 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-yellow-400 mb-2">
+              Deteksi Masalah
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Otomatis mengidentifikasi kata-kata yang sulit kamu ketik dan melacak perkembanganmu.
+            </p>
+          </article>
+          <article className="glass-card rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-green-400/20 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-green-400 mb-2">
+              Latihan Tangan
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Latihan dengan mode tangan kiri, kanan, atau bergantian untuk menguatkan jari yang lemah.
+            </p>
+          </article>
+          <article className="glass-card rounded-2xl p-6">
+            <div className="w-10 h-10 rounded-xl bg-blue-400/20 flex items-center justify-center mb-4">
+              <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-semibold text-blue-400 mb-2">
+              Analitik Mendalam
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Analisis detail keystroke, pola waktu, dan rekomendasi latihan yang dipersonalisasi.
+            </p>
+          </article>
+        </section>
+      )}
     </div>
   );
 }
