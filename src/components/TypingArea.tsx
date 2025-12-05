@@ -82,14 +82,27 @@ export default function TypingArea() {
     }
   }, [status, startTest]);
 
-  // Calculate live WPM
+  // Calculate live WPM - count correct chars per-letter like Monkeytype
   const calculateLiveWpm = useCallback(() => {
     if (wordResults.length === 0 || !useTypingStore.getState().startTime) return 0;
     const elapsedTime = (Date.now() - useTypingStore.getState().startTime!) / 1000;
-    const correctChars = wordResults.reduce(
-      (sum, w) => sum + (w.correct ? w.typed.length : 0),
-      0
-    );
+
+    let correctChars = 0;
+    wordResults.forEach((w, index) => {
+      // Add space for completed words (except last)
+      if (index < wordResults.length - 1) {
+        correctChars += 1;
+      }
+      // Count correct characters per-letter
+      const expectedChars = w.expected.split('');
+      const typedChars = w.typed.split('');
+      expectedChars.forEach((char, charIndex) => {
+        if (typedChars[charIndex] === char) {
+          correctChars += 1;
+        }
+      });
+    });
+
     return Math.round((correctChars / 5 / elapsedTime) * 60);
   }, [wordResults]);
 

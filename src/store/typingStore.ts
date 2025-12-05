@@ -36,6 +36,9 @@ interface TypingState {
   currentWordKeystrokes: Keystroke[];
   lastKeystrokeTime: number | null;
 
+  // Backtrack limit (can only go back 2 words from furthest point)
+  furthestWordIndex: number;
+
   // Results
   results: TestResults | null;
 
@@ -78,6 +81,7 @@ export const useTypingStore = create<TypingState>()(
       currentWordStartTime: null,
       currentWordKeystrokes: [],
       lastKeystrokeTime: null,
+      furthestWordIndex: 0,
       results: null,
       problemWords: [],
       testHistory: [],
@@ -103,6 +107,7 @@ export const useTypingStore = create<TypingState>()(
           currentWordStartTime: null,
           currentWordKeystrokes: [],
           lastKeystrokeTime: null,
+          furthestWordIndex: 0,
           results: null,
         });
       },
@@ -149,7 +154,30 @@ export const useTypingStore = create<TypingState>()(
       handleBackspace: () => {
         const state = get();
         if (state.status !== 'running') return;
-        if (state.currentInput.length === 0) return;
+
+        // If current input is empty, try to go back to previous word
+        if (state.currentInput.length === 0) {
+          // Can only go back 1 word from furthest point
+          if (state.currentWordIndex > 0 && state.currentWordIndex > state.furthestWordIndex - 1) {
+            const prevIndex = state.currentWordIndex - 1;
+            const prevWordResult = state.wordResults[prevIndex];
+
+            if (prevWordResult) {
+              // Remove the last word result and go back
+              const newWordResults = state.wordResults.slice(0, -1);
+
+              set({
+                currentWordIndex: prevIndex,
+                currentInput: prevWordResult.typed,
+                wordResults: newWordResults,
+                currentWordKeystrokes: prevWordResult.keystrokes,
+                currentWordStartTime: prevWordResult.startTime,
+                lastKeystrokeTime: Date.now(),
+              });
+            }
+          }
+          return;
+        }
 
         // Remove last character
         const newInput = state.currentInput.slice(0, -1);
@@ -218,6 +246,7 @@ export const useTypingStore = create<TypingState>()(
           currentWordStartTime: null,
           currentWordKeystrokes: [],
           lastKeystrokeTime: now,
+          furthestWordIndex: Math.max(state.furthestWordIndex, newIndex),
         });
       },
 
@@ -235,6 +264,7 @@ export const useTypingStore = create<TypingState>()(
           currentWordStartTime: null,
           currentWordKeystrokes: [],
           lastKeystrokeTime: null,
+          furthestWordIndex: 0,
           results: null,
         });
       },
@@ -258,20 +288,38 @@ export const useTypingStore = create<TypingState>()(
         const endTime = Date.now();
         const totalTime = (endTime - (state.startTime || endTime)) / 1000; // in seconds
 
-        // Calculate results
-        const totalChars = state.wordResults.reduce(
-          (sum, w) => sum + w.typed.length,
-          0
-        );
-        const correctChars = state.wordResults.reduce(
-          (sum, w) => sum + (w.correct ? w.typed.length : 0),
-          0
-        );
+        // Calculate results - count characters per-letter like Monkeytype
+        let totalChars = 0;
+        let correctChars = 0;
+
+        state.wordResults.forEach((w, index) => {
+          // Add word length
+          totalChars += w.typed.length;
+
+          // Add space (except for last word)
+          if (index < state.wordResults.length - 1) {
+            totalChars += 1; // space
+            // Space counts as correct if the word was completed (moved to next word)
+            correctChars += 1;
+          }
+
+          // Count correct characters per-letter
+          const expectedChars = w.expected.split('');
+          const typedChars = w.typed.split('');
+
+          expectedChars.forEach((char, charIndex) => {
+            if (typedChars[charIndex] === char) {
+              correctChars += 1;
+            }
+          });
+        });
+
         const incorrectChars = totalChars - correctChars;
         const totalWords = state.wordResults.length;
         const correctWords = state.wordResults.filter((w) => w.correct).length;
 
         // WPM calculation (standard: 5 chars = 1 word)
+        // Net WPM uses correct chars, Raw WPM uses all typed chars
         const wpm = Math.round((correctChars / 5 / totalTime) * 60);
         const rawWpm = Math.round((totalChars / 5 / totalTime) * 60);
         const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 0;
@@ -363,6 +411,7 @@ export const useTypingStore = create<TypingState>()(
           currentWordStartTime: null,
           currentWordKeystrokes: [],
           lastKeystrokeTime: null,
+          furthestWordIndex: 0,
           results: null,
           testMode: 'words',
           duration: words.length,
