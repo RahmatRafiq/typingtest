@@ -76,6 +76,20 @@ export default function TypingArea() {
     }
   }, [status, startTest]);
 
+  const handleBlur = useCallback(() => {
+    if (status === 'running' && containerRef.current) {
+      setTimeout(() => {
+        containerRef.current?.focus();
+      }, 10);
+    }
+  }, [status]);
+
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    if (status === 'running') {
+      e.preventDefault();
+    }
+  }, [status]);
+
   const calculateLiveWpm = useCallback(() => {
     if (wordResults.length === 0 || !useTypingStore.getState().startTime) return 0;
     const elapsedTime = (Date.now() - useTypingStore.getState().startTime!) / 1000;
@@ -143,17 +157,17 @@ export default function TypingArea() {
               const typedChar = currentInput[charIndex];
               if (charIndex < currentInput.length) {
                 if (typedChar === char) {
-                  className = 'text-green-400';
+                  className = 'text-green-400 transition-colors duration-100';
                 } else {
-                  className = 'text-red-500 bg-red-500/20 rounded';
+                  className = 'text-red-500 bg-red-500/20 rounded transition-all duration-100';
                 }
               } else if (charIndex === currentInput.length) {
-                className = 'text-white border-l-2 border-yellow-400 -ml-px pl-px animate-pulse';
+                className = 'text-white border-l-2 border-yellow-400 -ml-px pl-px animate-pulse transition-all duration-75';
               }
             }
 
             return (
-              <span key={charIndex} className={className}>
+              <span key={charIndex} className={`${className} transition-all duration-100`}>
                 {char}
               </span>
             );
@@ -210,7 +224,9 @@ export default function TypingArea() {
       tabIndex={0}
       onClick={handleContainerClick}
       onKeyDown={handleKeyDown}
-      className="relative focus:outline-none"
+      onBlur={handleBlur}
+      onMouseDown={handleMouseDown}
+      className="relative focus:outline-none select-none"
     >
       <div className="glass-card rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
         <div className="flex gap-4 sm:gap-8">
