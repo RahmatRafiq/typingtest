@@ -21,6 +21,8 @@ import {
 export default function AnalyticsPage() {
   const { testHistory, problemWords, resetAllData } = useTypingStore();
   const [showResetModal, setShowResetModal] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const CONFIRM_WORD = 'HAPUS';
 
   const totalTests = testHistory.length;
   const avgWpm = totalTests > 0
@@ -540,8 +542,8 @@ export default function AnalyticsPage() {
       )}
 
       {showResetModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="glass-card rounded-2xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0f1419] border border-red-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
                 <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -549,40 +551,67 @@ export default function AnalyticsPage() {
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-white">Konfirmasi Reset</h3>
+                <h3 className="text-lg font-semibold text-white">Danger Zone</h3>
                 <p className="text-gray-400 text-sm">Tindakan ini tidak dapat dibatalkan</p>
               </div>
             </div>
 
-            <p className="text-gray-300 mb-6">
-              Semua data berikut akan dihapus secara permanen:
-            </p>
-            <ul className="space-y-2 mb-6 text-sm">
-              <li className="flex items-center gap-2 text-gray-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                {totalTests} riwayat test
-              </li>
-              <li className="flex items-center gap-2 text-gray-400">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                {problemWords.length} kata bermasalah
-              </li>
-            </ul>
+            <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 mb-4">
+              <p className="text-gray-200 text-sm">
+                Semua data berikut akan dihapus <strong className="text-red-400">secara permanen</strong>:
+              </p>
+              <ul className="space-y-1 mt-3 text-sm">
+                <li className="flex items-center gap-2 text-gray-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  <strong>{totalTests}</strong> riwayat test
+                </li>
+                <li className="flex items-center gap-2 text-gray-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                  <strong>{problemWords.length}</strong> kata bermasalah
+                </li>
+              </ul>
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-gray-300 text-sm mb-2">
+                Ketik <strong className="text-red-400 font-mono bg-red-500/10 px-2 py-0.5 rounded">{CONFIRM_WORD}</strong> untuk konfirmasi:
+              </label>
+              <input
+                type="text"
+                value={confirmText}
+                onChange={(e) => setConfirmText(e.target.value.toUpperCase())}
+                placeholder={CONFIRM_WORD}
+                className="w-full px-4 py-3 bg-black/50 border border-gray-700 rounded-xl text-white placeholder-gray-600 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500/20 font-mono tracking-wider"
+                autoComplete="off"
+              />
+            </div>
 
             <div className="flex gap-3">
               <button
-                onClick={() => setShowResetModal(false)}
-                className="flex-1 px-4 py-3 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-colors font-medium"
+                onClick={() => {
+                  setShowResetModal(false);
+                  setConfirmText('');
+                }}
+                className="flex-1 px-4 py-3 bg-gray-800 text-white rounded-xl hover:bg-gray-700 transition-colors font-medium border border-gray-700"
               >
                 Batal
               </button>
               <button
                 onClick={() => {
-                  resetAllData();
-                  setShowResetModal(false);
+                  if (confirmText === CONFIRM_WORD) {
+                    resetAllData();
+                    setShowResetModal(false);
+                    setConfirmText('');
+                  }
                 }}
-                className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium"
+                disabled={confirmText !== CONFIRM_WORD}
+                className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${
+                  confirmText === CONFIRM_WORD
+                    ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
+                    : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
+                }`}
               >
-                Ya, Hapus Semua
+                Hapus Semua Data
               </button>
             </div>
           </div>
