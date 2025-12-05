@@ -542,8 +542,8 @@ export default function AnalyticsPage() {
       )}
 
       {showResetModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-900/90 backdrop-blur-xl border border-red-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl shadow-black/50">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white/10 backdrop-blur-2xl border border-red-500/30 rounded-2xl p-6 max-w-md w-full shadow-2xl shadow-black/50">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
                 <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
