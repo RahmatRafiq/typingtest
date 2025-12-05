@@ -6,6 +6,7 @@ import {
   createTestSlice,
   createSettingsSlice,
   createPracticeSlice,
+  createDataSlice,
 } from './slices';
 
 export const useTypingStore = create<TypingState>()(
@@ -36,6 +37,7 @@ export const useTypingStore = create<TypingState>()(
       ...createInputSlice(set, get),
       ...createTestSlice(set, get),
       ...createPracticeSlice(set, get),
+      ...createDataSlice(set, get),
     }),
     {
       name: 'typing-test-storage',

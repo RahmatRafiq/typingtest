@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTypingStore } from '@/store/typingStore';
 import Link from 'next/link';
 import {
@@ -18,7 +19,8 @@ import {
 } from 'recharts';
 
 export default function AnalyticsPage() {
-  const { testHistory, problemWords } = useTypingStore();
+  const { testHistory, problemWords, resetAllData } = useTypingStore();
+  const [showResetModal, setShowResetModal] = useState(false);
 
   const totalTests = testHistory.length;
   const avgWpm = totalTests > 0
@@ -517,6 +519,75 @@ export default function AnalyticsPage() {
           </li>
         </ul>
       </section>
+
+      {(totalTests > 0 || problemWords.length > 0) && (
+        <section className="glass-subtle rounded-2xl p-6 border border-red-500/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-1">Reset Data</h2>
+              <p className="text-gray-400 text-sm">
+                Hapus semua riwayat test dan kata bermasalah
+              </p>
+            </div>
+            <button
+              onClick={() => setShowResetModal(true)}
+              className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors font-medium"
+            >
+              Reset Semua Data
+            </button>
+          </div>
+        </section>
+      )}
+
+      {showResetModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="glass-card rounded-2xl p-6 max-w-md w-full">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-white">Konfirmasi Reset</h3>
+                <p className="text-gray-400 text-sm">Tindakan ini tidak dapat dibatalkan</p>
+              </div>
+            </div>
+
+            <p className="text-gray-300 mb-6">
+              Semua data berikut akan dihapus secara permanen:
+            </p>
+            <ul className="space-y-2 mb-6 text-sm">
+              <li className="flex items-center gap-2 text-gray-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                {totalTests} riwayat test
+              </li>
+              <li className="flex items-center gap-2 text-gray-400">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                {problemWords.length} kata bermasalah
+              </li>
+            </ul>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowResetModal(false)}
+                className="flex-1 px-4 py-3 bg-white/5 text-white rounded-xl hover:bg-white/10 transition-colors font-medium"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  resetAllData();
+                  setShowResetModal(false);
+                }}
+                className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium"
+              >
+                Ya, Hapus Semua
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -54,7 +54,11 @@ export interface PracticeSlice {
   updateProblemWords: (results: WordResult[]) => void;
 }
 
-export type TypingState = TypingStateData & SettingsSlice & InputSlice & TestSlice & PracticeSlice;
+export interface DataSlice {
+  resetAllData: () => void;
+}
+
+export type TypingState = TypingStateData & SettingsSlice & InputSlice & TestSlice & PracticeSlice & DataSlice;
 
 type SetState = (partial: Partial<TypingState> | ((state: TypingState) => Partial<TypingState>)) => void;
 type GetState = () => TypingState;
@@ -63,3 +67,4 @@ export type SettingsSliceCreator = (set: SetState, get: GetState) => SettingsSli
 export type InputSliceCreator = (set: SetState, get: GetState) => InputSlice;
 export type TestSliceCreator = (set: SetState, get: GetState) => TestSlice;
 export type PracticeSliceCreator = (set: SetState, get: GetState) => PracticeSlice;
+export type DataSliceCreator = (set: SetState, get: GetState) => DataSlice;
