@@ -416,19 +416,23 @@ export const useTypingStore = create<TypingState>()(
             if (newTypoRate > 0.3) tags.push('typo-prone');
             if (newAvgTime > 2000) tags.push('slow');
 
-            problemMap.set(result.expected, {
-              ...existing,
-              totalAppearances: newTotalAppearances,
-              typoCount: newTypoCount,
-              typoRate: newTypoRate,
-              avgTime: newAvgTime,
-              slowCount:
-                existing.slowCount + (wordTime > existing.avgTime * 2 ? 1 : 0),
-              lastPracticed: Date.now(),
-              improvementTrend: trend,
-              severityScore,
-              tags,
-            });
+            if (newTypoRate < 0.1 && newTotalAppearances >= 5 && trend === 'improving') {
+              problemMap.delete(result.expected);
+            } else {
+              problemMap.set(result.expected, {
+                ...existing,
+                totalAppearances: newTotalAppearances,
+                typoCount: newTypoCount,
+                typoRate: newTypoRate,
+                avgTime: newAvgTime,
+                slowCount:
+                  existing.slowCount + (wordTime > existing.avgTime * 2 ? 1 : 0),
+                lastPracticed: Date.now(),
+                improvementTrend: trend,
+                severityScore,
+                tags,
+              });
+            }
           } else if (typoRate > 0.3 || wordTime > 2000) {
             const severityScore = Math.min(
               100,
