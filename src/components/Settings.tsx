@@ -14,7 +14,7 @@ function SettingButton({ active, onClick, children, title }: SettingButtonProps)
     <button
       onClick={onClick}
       title={title}
-      className={`px-5 py-2.5 rounded-xl transition-all duration-200 font-medium ${
+      className={`px-3 py-2 sm:px-5 sm:py-2.5 rounded-lg sm:rounded-xl transition-all duration-200 text-sm sm:text-base font-medium ${
         active
           ? 'bg-yellow-400 text-gray-900'
           : 'glass-button text-gray-400 hover:text-white'
@@ -36,12 +36,12 @@ export default function Settings() {
   const wordModes = [25, 50, 100];
 
   return (
-    <div className={`glass-card rounded-2xl p-8 flex justify-center ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
-      <div className="flex flex-col space-y-5">
+    <div className={`glass-card rounded-2xl p-4 sm:p-8 flex justify-center ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+      <div className="flex flex-col space-y-4 sm:space-y-5 w-full sm:w-auto">
         {/* Mode Test */}
-        <div className="flex items-center gap-6">
-          <span className="text-gray-400 w-20 text-sm uppercase tracking-wide">mode</span>
-          <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">mode</span>
+          <div className="flex gap-2 sm:gap-3">
             <SettingButton
               active={testMode === 'time'}
               onClick={() => setTestMode('time')}
@@ -58,11 +58,11 @@ export default function Settings() {
         </div>
 
         {/* Durasi / Jumlah Kata */}
-        <div className="flex items-center gap-6">
-          <span className="text-gray-400 w-20 text-sm uppercase tracking-wide">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">
             {testMode === 'time' ? 'detik' : 'kata'}
           </span>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
             {testMode === 'time'
               ? timeModes.map((t) => (
                   <SettingButton
@@ -86,9 +86,9 @@ export default function Settings() {
         </div>
 
         {/* Mode Tangan */}
-        <div className="flex items-center gap-6">
-          <span className="text-gray-400 w-20 text-sm uppercase tracking-wide">tangan</span>
-          <div className="flex gap-3 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
+          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">tangan</span>
+          <div className="flex gap-2 sm:gap-3 flex-wrap">
             <SettingButton
               active={handMode === 'both'}
               onClick={() => setHandMode('both')}
@@ -122,7 +122,7 @@ export default function Settings() {
 
         {/* Penjelasan mode tangan */}
         {handMode !== 'both' && (
-          <div className="text-xs text-gray-500 pl-[6.5rem]">
+          <div className="text-xs text-gray-500 sm:pl-[6.5rem]">
             {handMode === 'left' && (
               <span>Fokus pada tombol: Q W E R T | A S D F G | Z X C V B</span>
             )}

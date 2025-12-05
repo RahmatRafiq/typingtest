@@ -117,7 +117,7 @@ export default function TypingArea() {
       return (
         <span
           key={index}
-          className={`inline-block mr-4 mb-3 text-2xl font-mono transition-all duration-150 ${
+          className={`inline-block mr-2 sm:mr-4 mb-2 sm:mb-3 text-lg sm:text-2xl font-mono transition-all duration-150 ${
             isCurrentWord ? 'scale-105' : ''
           }`}
         >
@@ -184,16 +184,16 @@ export default function TypingArea() {
             startTest();
           }
         }}
-        className="glass-strong rounded-2xl min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none"
+        className="glass-strong rounded-2xl min-h-[180px] sm:min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none"
       >
-        <div className="text-center">
-          <p className="text-gray-300 text-xl mb-3 group-hover:text-white transition-colors">
+        <div className="text-center px-4">
+          <p className="text-gray-300 text-base sm:text-xl mb-2 sm:mb-3 group-hover:text-white transition-colors">
             Klik di sini atau tekan tombol apa saja untuk mulai
           </p>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-xs sm:text-sm">
             Tekan Tab untuk restart kapan saja
           </p>
-          <div className="mt-6 flex gap-4 justify-center text-gray-500 text-xs">
+          <div className="mt-4 sm:mt-6 hidden sm:flex gap-4 justify-center text-gray-500 text-xs">
             <span className="px-3 py-1.5 glass rounded-lg">Spasi = lanjut</span>
             <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
             <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
@@ -216,38 +216,38 @@ export default function TypingArea() {
       className="relative focus:outline-none"
     >
       {/* Stats bar */}
-      <div className="glass-card rounded-2xl p-4 mb-6 flex justify-between items-center">
-        <div className="flex gap-8">
+      <div className="glass-card rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
+        <div className="flex gap-4 sm:gap-8">
           <div>
-            <span className="text-gray-400 text-sm uppercase tracking-wide">WPM</span>
-            <div className="text-yellow-400 font-bold text-2xl">{calculateLiveWpm()}</div>
+            <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">WPM</span>
+            <div className="text-yellow-400 font-bold text-xl sm:text-2xl">{calculateLiveWpm()}</div>
           </div>
           <div>
-            <span className="text-gray-400 text-sm uppercase tracking-wide">Akurasi</span>
-            <div className="text-green-400 font-bold text-2xl">{calculateLiveAccuracy()}%</div>
+            <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">Akurasi</span>
+            <div className="text-green-400 font-bold text-xl sm:text-2xl">{calculateLiveAccuracy()}%</div>
           </div>
         </div>
         {testMode === 'time' && (
-          <div className="text-4xl font-bold text-yellow-400">
+          <div className="text-2xl sm:text-4xl font-bold text-yellow-400">
             {timeRemaining}
           </div>
         )}
         {testMode === 'words' && (
-          <div className="text-lg text-gray-400">
+          <div className="text-sm sm:text-lg text-gray-400">
             <span className="text-white font-bold">{currentWordIndex}</span> / {words.length}
           </div>
         )}
       </div>
 
       {/* Keyboard hints */}
-      <div className="flex gap-3 mb-4 text-xs text-gray-500">
+      <div className="hidden sm:flex gap-3 mb-4 text-xs text-gray-500">
         <span className="px-3 py-1.5 glass rounded-lg">Spasi = lanjut</span>
         <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
         <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
       </div>
 
       {/* Words display */}
-      <div className="relative glass-strong rounded-2xl p-8 min-h-[180px] overflow-hidden">
+      <div className="relative glass-strong rounded-2xl p-4 sm:p-8 min-h-[150px] sm:min-h-[180px] overflow-hidden">
         <div className="flex flex-wrap leading-relaxed">
           {words.slice(0, Math.min(currentWordIndex + 20, words.length)).map((word, index) =>
             renderWord(word, index)
@@ -261,7 +261,7 @@ export default function TypingArea() {
       </div>
 
       {/* Progress bar */}
-      <div className="mt-6 h-1.5 glass rounded-full overflow-hidden">
+      <div className="mt-4 sm:mt-6 h-1 sm:h-1.5 glass rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-yellow-400 to-green-400 transition-all duration-300"
           style={{
@@ -271,9 +271,9 @@ export default function TypingArea() {
       </div>
 
       {/* Current word preview */}
-      <div className="mt-4 text-center">
-        <span className="text-gray-500 text-sm">Kata saat ini: </span>
-        <span className="text-white font-mono text-lg">
+      <div className="mt-3 sm:mt-4 text-center">
+        <span className="text-gray-500 text-xs sm:text-sm">Kata saat ini: </span>
+        <span className="text-white font-mono text-base sm:text-lg">
           {words[currentWordIndex] || ''}
         </span>
       </div>
