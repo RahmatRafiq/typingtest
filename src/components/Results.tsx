@@ -8,7 +8,6 @@ export default function Results() {
 
   if (status !== 'finished' || !results) return null;
 
-  // Ambil kata bermasalah dengan detail
   const problemWordsDetails = wordResults
     .filter((w) => !w.correct || w.endTime - w.startTime > 2000)
     .map((w) => ({
@@ -22,7 +21,6 @@ export default function Results() {
 
   return (
     <div className="animate-fadeIn">
-      {/* Statistik Utama */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="glass-card rounded-2xl p-6 text-center">
           <div className="text-5xl font-bold text-yellow-400 mb-2">{results.wpm}</div>
@@ -42,9 +40,7 @@ export default function Results() {
         </div>
       </div>
 
-      {/* Statistik Detail */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Statistik Karakter */}
         <div className="glass-card rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Karakter</h3>
           <div className="space-y-4">
@@ -63,7 +59,6 @@ export default function Results() {
           </div>
         </div>
 
-        {/* Statistik Kata */}
         <div className="glass-card rounded-2xl p-6">
           <h3 className="text-lg font-semibold text-white mb-4">Kata</h3>
           <div className="space-y-4">
@@ -83,7 +78,6 @@ export default function Results() {
         </div>
       </div>
 
-      {/* Kata Bermasalah */}
       {problemWordsDetails.length > 0 && (
         <div className="glass-card rounded-2xl p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -158,7 +152,6 @@ export default function Results() {
         </div>
       )}
 
-      {/* Tombol Aksi */}
       <div className="flex justify-center gap-4">
         <button
           onClick={resetTest}
@@ -174,7 +167,6 @@ export default function Results() {
         </Link>
       </div>
 
-      {/* Tips singkat */}
       <p className="text-center text-gray-500 text-sm mt-6">
         Tekan Tab untuk restart cepat
       </p>

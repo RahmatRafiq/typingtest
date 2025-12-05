@@ -6,7 +6,7 @@ export interface Keystroke {
   key: string;
   timestamp: number;
   correct: boolean;
-  delay: number; // ms since previous keystroke
+  delay: number;
 }
 
 export interface WordResult {
@@ -26,7 +26,7 @@ export interface TestSession {
   timestamp: number;
   mode: TestMode;
   handMode: HandMode;
-  duration: number; // in seconds for time mode, or word count
+  duration: number;
   words: WordResult[];
   results: TestResults;
 }
@@ -69,7 +69,6 @@ export interface UserStats {
   recentTests: TestSession[];
 }
 
-// Database types for Supabase
 export interface DbTestSession {
   id: string;
   user_id?: string;

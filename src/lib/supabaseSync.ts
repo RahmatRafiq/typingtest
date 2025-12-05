@@ -1,7 +1,6 @@
 import { supabase, getAnonymousUserId } from './supabase';
 import { TestSession, ProblemWord, WordResult } from '@/types';
 
-// Sync test session to Supabase
 export async function syncTestSession(session: TestSession): Promise<boolean> {
   try {
     const userId = getAnonymousUserId();
@@ -36,13 +35,11 @@ export async function syncTestSession(session: TestSession): Promise<boolean> {
   }
 }
 
-// Sync problem words to Supabase
 export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boolean> {
   try {
     const userId = getAnonymousUserId();
     if (!userId) return false;
 
-    // Upsert each problem word
     for (const word of problemWords) {
       const { error } = await supabase.from('problem_words').upsert(
         {
@@ -76,7 +73,6 @@ export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boo
   }
 }
 
-// Load test history from Supabase
 export async function loadTestHistory(): Promise<TestSession[]> {
   try {
     const userId = getAnonymousUserId();
@@ -94,7 +90,6 @@ export async function loadTestHistory(): Promise<TestSession[]> {
       return [];
     }
 
-    // Transform database records to TestSession objects
     return (data || []).map((row) => ({
       id: row.id,
       userId: row.user_id,
@@ -123,7 +118,6 @@ export async function loadTestHistory(): Promise<TestSession[]> {
   }
 }
 
-// Load problem words from Supabase
 export async function loadProblemWords(): Promise<ProblemWord[]> {
   try {
     const userId = getAnonymousUserId();
@@ -140,7 +134,6 @@ export async function loadProblemWords(): Promise<ProblemWord[]> {
       return [];
     }
 
-    // Transform database records to ProblemWord objects
     return (data || []).map((row) => ({
       word: row.word,
       totalAppearances: row.total_appearances,
@@ -160,7 +153,6 @@ export async function loadProblemWords(): Promise<ProblemWord[]> {
   }
 }
 
-// Get user stats from Supabase
 export async function getUserStats(): Promise<{
   totalTests: number;
   avgWpm: number;
@@ -179,7 +171,6 @@ export async function getUserStats(): Promise<{
 
     if (error) {
       if (error.code === 'PGRST116') {
-        // No data found
         return null;
       }
       console.error('Error loading user stats:', error);

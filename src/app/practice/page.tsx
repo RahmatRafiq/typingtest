@@ -14,7 +14,6 @@ export default function PracticePage() {
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
 
-  // Fungsi untuk generate kata berdasarkan mode
   const generateWords = () => {
     let words: string[] = [];
 
@@ -54,10 +53,8 @@ export default function PracticePage() {
     return words;
   };
 
-  // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Tab untuk restart dengan mode yang sama
       if (e.key === 'Tab') {
         e.preventDefault();
         const words = generateWords();
@@ -81,7 +78,6 @@ export default function PracticePage() {
     startPracticeMode(words);
   };
 
-  // Tampilkan hasil jika selesai
   if (status === 'finished') {
     return (
       <div className="space-y-6 sm:space-y-8">
@@ -96,7 +92,6 @@ export default function PracticePage() {
     );
   }
 
-  // Tampilkan area mengetik jika sedang berjalan
   if (status === 'running') {
     return (
       <div className="space-y-6 sm:space-y-8">
@@ -117,10 +112,8 @@ export default function PracticePage() {
     );
   }
 
-  // Tampilkan pilihan latihan
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Mode Latihan</h1>
         <p className="text-gray-400 text-sm sm:text-base">
@@ -128,7 +121,6 @@ export default function PracticePage() {
         </p>
       </div>
 
-      {/* Pilihan Mode Latihan */}
       <section className="glass-card rounded-2xl p-4 sm:p-6">
         <h2 className="text-base sm:text-lg font-semibold text-white mb-4 sm:mb-5">Pilih Jenis Latihan</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -190,7 +182,6 @@ export default function PracticePage() {
         </div>
       </section>
 
-      {/* Input kata kustom */}
       {practiceMode === 'custom' && (
         <section className="glass-card rounded-2xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Masukkan Kata Kustom</h2>
@@ -203,7 +194,6 @@ export default function PracticePage() {
         </section>
       )}
 
-      {/* Pilihan jumlah kata */}
       {practiceMode !== 'custom' && (
         <section className="glass-card rounded-2xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Jumlah Kata</h2>
@@ -225,7 +215,6 @@ export default function PracticePage() {
         </section>
       )}
 
-      {/* Preview kata bermasalah */}
       {practiceMode === 'problem-words' && problemWords.length > 0 && (
         <section className="glass-subtle rounded-2xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Kata yang Akan Dilatih</h2>
@@ -253,7 +242,6 @@ export default function PracticePage() {
         </section>
       )}
 
-      {/* Peringatan tidak ada kata bermasalah */}
       {practiceMode === 'problem-words' && problemWords.length === 0 && (
         <div className="glass border border-yellow-500/30 rounded-2xl p-4 sm:p-6">
           <p className="text-yellow-400 text-sm sm:text-base">
@@ -266,7 +254,6 @@ export default function PracticePage() {
         </div>
       )}
 
-      {/* Tombol mulai */}
       <div className="flex justify-center">
         <button
           onClick={handleStartPractice}

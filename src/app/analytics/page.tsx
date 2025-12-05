@@ -20,7 +20,6 @@ import {
 export default function AnalyticsPage() {
   const { testHistory, problemWords } = useTypingStore();
 
-  // Hitung statistik keseluruhan
   const totalTests = testHistory.length;
   const avgWpm = totalTests > 0
     ? Math.round(testHistory.reduce((sum, t) => sum + t.results.wpm, 0) / totalTests)
@@ -32,13 +31,10 @@ export default function AnalyticsPage() {
     ? Math.max(...testHistory.map((t) => t.results.wpm))
     : 0;
 
-  // Ambil test terbaru (10 terakhir)
   const recentTests = testHistory.slice(0, 10);
 
-  // Ambil kata bermasalah teratas
   const topProblemWords = problemWords.slice(0, 15);
 
-  // Hitung tren WPM
   const wpmTrend = testHistory.slice(0, 10).map((t) => t.results.wpm);
   const trendDirection =
     wpmTrend.length >= 2
@@ -49,7 +45,6 @@ export default function AnalyticsPage() {
         : 'stabil'
       : 'stabil';
 
-  // Data untuk chart - reverse agar urutan kronologis (lama ke baru)
   const chartData = testHistory
     .slice(0, 20)
     .reverse()
@@ -65,7 +60,6 @@ export default function AnalyticsPage() {
       }),
     }));
 
-  // Data untuk bar chart per mode tangan
   const handModeData = [
     {
       name: 'Semua',
@@ -109,7 +103,6 @@ export default function AnalyticsPage() {
     },
   ].filter((d) => d.tests > 0);
 
-  // Custom tooltip untuk chart
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
@@ -129,13 +122,11 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-white mb-2">Dashboard Analitik</h1>
         <p className="text-gray-400">Lacak progres mengetikmu dan identifikasi area yang perlu diperbaiki</p>
       </div>
 
-      {/* Statistik Umum */}
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">Ringkasan</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -158,12 +149,10 @@ export default function AnalyticsPage() {
         </div>
       </section>
 
-      {/* Grafik WPM & Akurasi */}
       {chartData.length >= 2 && (
         <section>
           <h2 className="text-xl font-semibold text-white mb-4">Tren Performa</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* WPM Chart */}
             <div className="glass-card rounded-2xl p-6">
               <h3 className="text-lg font-medium text-white mb-4">WPM per Test</h3>
               <div className="h-64">
@@ -205,7 +194,6 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            {/* Accuracy & Consistency Chart */}
             <div className="glass-card rounded-2xl p-6">
               <h3 className="text-lg font-medium text-white mb-4">Akurasi & Konsistensi</h3>
               <div className="h-64">
@@ -242,7 +230,6 @@ export default function AnalyticsPage() {
         </section>
       )}
 
-      {/* Grafik per Mode Tangan */}
       {handModeData.length > 1 && (
         <section>
           <h2 className="text-xl font-semibold text-white mb-4">Performa per Mode Tangan</h2>
@@ -275,7 +262,6 @@ export default function AnalyticsPage() {
         </section>
       )}
 
-      {/* Indikator tren */}
       {totalTests >= 2 && (
         <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
           <div
@@ -325,7 +311,6 @@ export default function AnalyticsPage() {
         </div>
       )}
 
-      {/* Kata Bermasalah */}
       <section>
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold text-white">Kata Bermasalah</h2>
@@ -425,7 +410,6 @@ export default function AnalyticsPage() {
         )}
       </section>
 
-      {/* Test Terbaru */}
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">Test Terbaru</h2>
 
@@ -508,7 +492,6 @@ export default function AnalyticsPage() {
         )}
       </section>
 
-      {/* Bagian Tips */}
       <section className="glass-subtle rounded-2xl p-6">
         <h2 className="text-lg font-semibold text-white mb-4">Tips untuk Meningkat</h2>
         <ul className="space-y-3 text-gray-400 text-sm">

@@ -5,7 +5,6 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Helper to get or create anonymous user ID
 export function getAnonymousUserId(): string {
   if (typeof window === 'undefined') return '';
 

@@ -21,14 +21,12 @@ export default function TypingArea() {
     tick,
   } = useTypingStore();
 
-  // Focus container when test starts
   useEffect(() => {
     if (status === 'running' && containerRef.current) {
       containerRef.current.focus();
     }
   }, [status]);
 
-  // Timer tick
   useEffect(() => {
     if (status !== 'running' || testMode !== 'time') return;
 
@@ -39,12 +37,10 @@ export default function TypingArea() {
     return () => clearInterval(interval);
   }, [status, testMode, tick]);
 
-  // Handle keyboard events
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (status !== 'running') return;
 
-      // Prevent default for special keys
       if (e.key === 'Tab') {
         e.preventDefault();
         useTypingStore.getState().resetTest();
@@ -63,7 +59,6 @@ export default function TypingArea() {
         return;
       }
 
-      // Only handle printable characters (single character keys)
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         handleKeyPress(e.key);
@@ -72,7 +67,6 @@ export default function TypingArea() {
     [status, handleKeyPress, handleBackspace, handleSpace]
   );
 
-  // Click to focus and start
   const handleContainerClick = useCallback(() => {
     if (status === 'idle') {
       startTest();
@@ -82,18 +76,15 @@ export default function TypingArea() {
     }
   }, [status, startTest]);
 
-  // Calculate live WPM - count correct chars per-letter like Monkeytype
   const calculateLiveWpm = useCallback(() => {
     if (wordResults.length === 0 || !useTypingStore.getState().startTime) return 0;
     const elapsedTime = (Date.now() - useTypingStore.getState().startTime!) / 1000;
 
     let correctChars = 0;
     wordResults.forEach((w, index) => {
-      // Add space for completed words (except last)
       if (index < wordResults.length - 1) {
         correctChars += 1;
       }
-      // Count correct characters per-letter
       const expectedChars = w.expected.split('');
       const typedChars = w.typed.split('');
       expectedChars.forEach((char, charIndex) => {
@@ -106,7 +97,6 @@ export default function TypingArea() {
     return Math.round((correctChars / 5 / elapsedTime) * 60);
   }, [wordResults]);
 
-  // Calculate live accuracy
   const calculateLiveAccuracy = useCallback(() => {
     const totalKeystrokes = wordResults.reduce(
       (sum, w) => sum + w.keystrokes.length,
@@ -120,7 +110,6 @@ export default function TypingArea() {
     return Math.round((correctKeystrokes / totalKeystrokes) * 100);
   }, [wordResults]);
 
-  // Render word with character highlighting
   const renderWord = useCallback(
     (word: string, index: number) => {
       const isCurrentWord = index === currentWordIndex;
@@ -135,25 +124,22 @@ export default function TypingArea() {
           }`}
         >
           {word.split('').map((char, charIndex) => {
-            let className = 'text-gray-500'; // Default - belum diketik
+            let className = 'text-gray-500';
 
             if (isCompleted && wordResult) {
-              // Kata sudah selesai
               if (wordResult.correct) {
                 className = 'text-green-400';
               } else {
-                // Cek apakah karakter spesifik ini benar
                 const typedChar = wordResult.typed[charIndex];
                 if (typedChar === char) {
                   className = 'text-green-400';
                 } else if (typedChar) {
                   className = 'text-red-500';
                 } else {
-                  className = 'text-red-500/50'; // Karakter hilang
+                  className = 'text-red-500/50';
                 }
               }
             } else if (isCurrentWord) {
-              // Kata yang sedang diketik
               const typedChar = currentInput[charIndex];
               if (charIndex < currentInput.length) {
                 if (typedChar === char) {
@@ -162,7 +148,6 @@ export default function TypingArea() {
                   className = 'text-red-500 bg-red-500/20 rounded';
                 }
               } else if (charIndex === currentInput.length) {
-                // Posisi kursor saat ini
                 className = 'text-white border-l-2 border-yellow-400 -ml-px pl-px animate-pulse';
               }
             }
@@ -173,7 +158,6 @@ export default function TypingArea() {
               </span>
             );
           })}
-          {/* Tampilkan karakter lebih yang diketik sebagai error */}
           {isCurrentWord && currentInput.length > word.length && (
             <span className="text-red-500 bg-red-500/20 rounded">
               {currentInput.slice(word.length)}
@@ -217,7 +201,7 @@ export default function TypingArea() {
   }
 
   if (status === 'finished') {
-    return null; // Results akan ditampilkan oleh parent component
+    return null;
   }
 
   return (
@@ -228,7 +212,6 @@ export default function TypingArea() {
       onKeyDown={handleKeyDown}
       className="relative focus:outline-none"
     >
-      {/* Stats bar */}
       <div className="glass-card rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
         <div className="flex gap-4 sm:gap-8">
           <div>
@@ -252,14 +235,12 @@ export default function TypingArea() {
         )}
       </div>
 
-      {/* Keyboard hints */}
       <div className="hidden sm:flex gap-3 mb-4 text-xs text-gray-500">
         <span className="px-3 py-1.5 glass rounded-lg">Spasi = lanjut</span>
         <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
         <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
       </div>
 
-      {/* Words display */}
       <div className="relative glass-strong rounded-2xl p-4 sm:p-8 min-h-[150px] sm:min-h-[180px] overflow-hidden">
         <div className="flex flex-wrap leading-relaxed">
           {words.slice(0, Math.min(currentWordIndex + 20, words.length)).map((word, index) =>
@@ -267,13 +248,11 @@ export default function TypingArea() {
           )}
         </div>
 
-        {/* Click to focus message */}
         <div className="absolute inset-0 flex items-center justify-center bg-gray-950/80 opacity-0 hover:opacity-100 transition-opacity pointer-events-none rounded-2xl">
           <span className="text-gray-400">Klik untuk fokus</span>
         </div>
       </div>
 
-      {/* Progress bar */}
       <div className="mt-4 sm:mt-6 h-1 sm:h-1.5 glass rounded-full overflow-hidden">
         <div
           className="h-full bg-gradient-to-r from-yellow-400 to-green-400 transition-all duration-300"
@@ -283,7 +262,6 @@ export default function TypingArea() {
         />
       </div>
 
-      {/* Current word preview */}
       <div className="mt-3 sm:mt-4 text-center">
         <span className="text-gray-500 text-xs sm:text-sm">Kata saat ini: </span>
         <span className="text-white font-mono text-base sm:text-lg">

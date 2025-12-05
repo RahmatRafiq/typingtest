@@ -1,4 +1,3 @@
-// Layout keyboard QWERTY - pembagian tangan
 const LEFT_HAND_KEYS = new Set(['q', 'w', 'e', 'r', 't', 'a', 's', 'd', 'f', 'g', 'z', 'x', 'c', 'v', 'b']);
 const RIGHT_HAND_KEYS = new Set(['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'n', 'm']);
 
@@ -12,9 +11,7 @@ export function getWordHand(word: string): 'left' | 'right' | 'mixed' {
   return 'mixed';
 }
 
-// Kata-kata Bahasa Indonesia dikategorikan berdasarkan tangan
 export const WORDS = {
-  // Kata yang diketik terutama dengan tangan KIRI (QWERT ASDFG ZXCVB)
   left: [
     'ada', 'agar', 'adat', 'ajar', 'atas', 'bab', 'bad', 'baca', 'badan', 'bagi',
     'bagas', 'bakar', 'barat', 'baru', 'basa', 'batas', 'bawa', 'bebas', 'beda',
@@ -162,7 +159,6 @@ export const WORDS = {
     'sawit', 'saya', 'sayap', 'sayang', 'sayat', 'sayup', 'sayur'
   ],
 
-  // Kata yang diketik terutama dengan tangan KANAN (YUIOP HJKL NM)
   right: [
     'hiu', 'hijau', 'hilmi', 'hindu', 'hingga', 'hirup', 'hitung', 'hobby', 'hongkong',
     'horizon', 'hormati', 'hosting', 'hotel', 'hubungi', 'hujung', 'hukum', 'hujan',
@@ -254,7 +250,6 @@ export const WORDS = {
     'mutawatir', 'mutia', 'mutiara', 'mutlak', 'mutu', 'muturut', 'muzakarah', 'muzaki', 'myopia'
   ],
 
-  // Kata campuran (kedua tangan)
   mixed: [
     'adalah', 'adanya', 'adapun', 'agama', 'akan', 'akhir', 'akibat', 'aktivitas', 'alam',
     'alasan', 'amat', 'anak', 'antara', 'apa', 'apabila', 'apakah', 'arah', 'artikel',
@@ -285,7 +280,6 @@ export const WORDS = {
   ]
 };
 
-// Ambil kata berdasarkan mode tangan
 export function getWords(handMode: 'both' | 'left' | 'right' | 'alternating', count: number): string[] {
   let wordPool: string[] = [];
 
@@ -297,7 +291,6 @@ export function getWords(handMode: 'both' | 'left' | 'right' | 'alternating', co
       wordPool = [...WORDS.right];
       break;
     case 'alternating':
-      // Bergantian antara kata dominan kiri dan kanan
       const leftWords = shuffleArray([...WORDS.left]);
       const rightWords = shuffleArray([...WORDS.right]);
       const result: string[] = [];
@@ -317,7 +310,6 @@ export function getWords(handMode: 'both' | 'left' | 'right' | 'alternating', co
   return shuffleArray(wordPool).slice(0, count);
 }
 
-// Fisher-Yates shuffle
 function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array];
   for (let i = shuffled.length - 1; i > 0; i--) {
@@ -327,7 +319,6 @@ function shuffleArray<T>(array: T[]): T[] {
   return shuffled;
 }
 
-// Ambil kata bermasalah untuk mode latihan
 export function getProblemWords(problemList: string[], mixRatio: number = 0.7, totalCount: number = 50): string[] {
   const problemCount = Math.floor(totalCount * mixRatio);
   const fillerCount = totalCount - problemCount;

@@ -29,7 +29,6 @@ export default function Settings() {
   const { testMode, handMode, duration, status, setTestMode, setHandMode, setDuration } =
     useTypingStore();
 
-  // Tidak boleh ubah setting saat test berjalan
   const disabled = status === 'running';
 
   const timeModes = [15, 30, 60, 120];
@@ -38,7 +37,6 @@ export default function Settings() {
   return (
     <div className={`glass-card rounded-2xl p-4 sm:p-8 flex justify-center ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
       <div className="flex flex-col space-y-4 sm:space-y-5 w-full sm:w-auto">
-        {/* Mode Test */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">mode</span>
           <div className="flex gap-2 sm:gap-3">
@@ -57,7 +55,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Durasi / Jumlah Kata */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">
             {testMode === 'time' ? 'detik' : 'kata'}
@@ -85,7 +82,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Mode Tangan */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
           <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">tangan</span>
           <div className="flex gap-2 sm:gap-3 flex-wrap">
@@ -120,7 +116,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Penjelasan mode tangan */}
         {handMode !== 'both' && (
           <div className="text-xs text-gray-500 sm:pl-[6.5rem]">
             {handMode === 'left' && (

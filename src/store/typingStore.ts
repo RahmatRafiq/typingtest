@@ -14,41 +14,32 @@ import { getWords, getWordHand, getProblemWords } from '@/lib/words';
 import { syncTestSession, syncProblemWords } from '@/lib/supabaseSync';
 
 interface TypingState {
-  // Test configuration
   testMode: TestMode;
   handMode: HandMode;
-  duration: number; // seconds for time mode, word count for words mode
+  duration: number;
 
-  // Test state
   status: TestStatus;
   words: string[];
   currentWordIndex: number;
   currentInput: string;
   wordResults: WordResult[];
 
-  // Timing
   startTime: number | null;
   endTime: number | null;
   timeRemaining: number;
 
-  // Keystroke tracking
   currentWordStartTime: number | null;
   currentWordKeystrokes: Keystroke[];
   lastKeystrokeTime: number | null;
 
-  // Backtrack limit (can only go back 2 words from furthest point)
   furthestWordIndex: number;
 
-  // Results
   results: TestResults | null;
 
-  // Problem words (persisted)
   problemWords: ProblemWord[];
 
-  // History (persisted)
   testHistory: TestSession[];
 
-  // Actions
   setTestMode: (mode: TestMode) => void;
   setHandMode: (mode: HandMode) => void;
   setDuration: (duration: number) => void;
@@ -66,7 +57,6 @@ interface TypingState {
 export const useTypingStore = create<TypingState>()(
   persist(
     (set, get) => ({
-      // Initial state
       testMode: 'time',
       handMode: 'both',
       duration: 30,
@@ -92,7 +82,7 @@ export const useTypingStore = create<TypingState>()(
 
       startTest: () => {
         const { handMode, duration, testMode } = get();
-        const wordCount = testMode === 'words' ? duration : 200; // More words for time mode
+        const wordCount = testMode === 'words' ? duration : 200;
         const words = getWords(handMode, wordCount);
 
         set({
@@ -116,24 +106,20 @@ export const useTypingStore = create<TypingState>()(
         const state = get();
         if (state.status !== 'running') return;
 
-        // Ignore space key here - handled by handleSpace
         if (key === ' ') return;
 
         const now = Date.now();
 
-        // Start word timer on first keystroke
         if (state.currentWordStartTime === null) {
           set({ currentWordStartTime: now });
         }
 
-        // Calculate delay from last keystroke
         const delay = state.lastKeystrokeTime ? now - state.lastKeystrokeTime : 0;
 
         const currentWord = state.words[state.currentWordIndex];
         const expectedChar = currentWord[state.currentInput.length];
         const isCorrect = key === expectedChar;
 
-        // Record keystroke
         const keystroke: Keystroke = {
           key,
           timestamp: now,
@@ -155,15 +141,12 @@ export const useTypingStore = create<TypingState>()(
         const state = get();
         if (state.status !== 'running') return;
 
-        // If current input is empty, try to go back to previous word
         if (state.currentInput.length === 0) {
-          // Can only go back 1 word from furthest point
           if (state.currentWordIndex > 0 && state.currentWordIndex > state.furthestWordIndex - 1) {
             const prevIndex = state.currentWordIndex - 1;
             const prevWordResult = state.wordResults[prevIndex];
 
             if (prevWordResult) {
-              // Remove the last word result and go back
               const newWordResults = state.wordResults.slice(0, -1);
 
               set({
@@ -179,10 +162,7 @@ export const useTypingStore = create<TypingState>()(
           return;
         }
 
-        // Remove last character
         const newInput = state.currentInput.slice(0, -1);
-
-        // Also remove the last keystroke
         const newKeystrokes = state.currentWordKeystrokes.slice(0, -1);
 
         set({
@@ -196,7 +176,6 @@ export const useTypingStore = create<TypingState>()(
         const state = get();
         if (state.status !== 'running') return;
 
-        // Don't allow space if no input yet
         if (state.currentInput.length === 0) return;
 
         const now = Date.now();
@@ -219,7 +198,6 @@ export const useTypingStore = create<TypingState>()(
         const newWordResults = [...state.wordResults, wordResult];
         const newIndex = state.currentWordIndex + 1;
 
-        // Check if test should end (words mode)
         if (state.testMode === 'words' && newIndex >= state.duration) {
           set({
             wordResults: newWordResults,
@@ -229,7 +207,6 @@ export const useTypingStore = create<TypingState>()(
           return;
         }
 
-        // Check if we've run out of words
         if (newIndex >= state.words.length) {
           set({
             wordResults: newWordResults,
@@ -286,24 +263,19 @@ export const useTypingStore = create<TypingState>()(
       finishTest: () => {
         const state = get();
         const endTime = Date.now();
-        const totalTime = (endTime - (state.startTime || endTime)) / 1000; // in seconds
+        const totalTime = (endTime - (state.startTime || endTime)) / 1000;
 
-        // Calculate results - count characters per-letter like Monkeytype
         let totalChars = 0;
         let correctChars = 0;
 
         state.wordResults.forEach((w, index) => {
-          // Add word length
           totalChars += w.typed.length;
 
-          // Add space (except for last word)
           if (index < state.wordResults.length - 1) {
-            totalChars += 1; // space
-            // Space counts as correct if the word was completed (moved to next word)
+            totalChars += 1;
             correctChars += 1;
           }
 
-          // Count correct characters per-letter
           const expectedChars = w.expected.split('');
           const typedChars = w.typed.split('');
 
@@ -318,13 +290,10 @@ export const useTypingStore = create<TypingState>()(
         const totalWords = state.wordResults.length;
         const correctWords = state.wordResults.filter((w) => w.correct).length;
 
-        // WPM calculation (standard: 5 chars = 1 word)
-        // Net WPM uses correct chars, Raw WPM uses all typed chars
         const wpm = Math.round((correctChars / 5 / totalTime) * 60);
         const rawWpm = Math.round((totalChars / 5 / totalTime) * 60);
         const accuracy = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 0;
 
-        // Consistency calculation (based on word typing times)
         const wordTimes = state.wordResults.map((w) => w.endTime - w.startTime);
         const avgTime = wordTimes.reduce((a, b) => a + b, 0) / wordTimes.length;
         const variance =
@@ -333,7 +302,6 @@ export const useTypingStore = create<TypingState>()(
         const stdDev = Math.sqrt(variance);
         const consistency = Math.max(0, Math.round(100 - (stdDev / avgTime) * 100));
 
-        // Identify problem words (>30% typo rate or >2x average time)
         const problemWords = state.wordResults
           .filter((w) => {
             const typoRate = w.keystrokes.length > 0
@@ -344,7 +312,6 @@ export const useTypingStore = create<TypingState>()(
           })
           .map((w) => w.expected);
 
-        // Identify slow words
         const slowWords = state.wordResults
           .filter((w) => w.endTime - w.startTime > avgTime * 2)
           .map((w) => w.expected);
@@ -363,7 +330,6 @@ export const useTypingStore = create<TypingState>()(
           slowWords: [...new Set(slowWords)],
         };
 
-        // Create test session
         const session: TestSession = {
           id: crypto.randomUUID(),
           timestamp: endTime,
@@ -374,7 +340,6 @@ export const useTypingStore = create<TypingState>()(
           results,
         };
 
-        // Update history (keep last 50 tests)
         const newHistory = [session, ...state.testHistory].slice(0, 50);
 
         set({
@@ -384,10 +349,8 @@ export const useTypingStore = create<TypingState>()(
           testHistory: newHistory,
         });
 
-        // Sync to Supabase (non-blocking)
         syncTestSession(session).catch(console.error);
 
-        // Update problem words database
         get().updateProblemWords(state.wordResults);
       },
 
@@ -431,7 +394,6 @@ export const useTypingStore = create<TypingState>()(
           const wordTime = result.endTime - result.startTime;
 
           if (existing) {
-            // Update existing problem word
             const newTotalAppearances = existing.totalAppearances + 1;
             const newTypoCount = existing.typoCount + (result.correct ? 0 : 1);
             const newTypoRate =
@@ -441,18 +403,15 @@ export const useTypingStore = create<TypingState>()(
               (existing.avgTime * existing.totalAppearances + wordTime) /
               newTotalAppearances;
 
-            // Determine improvement trend
             let trend: 'improving' | 'stable' | 'worsening' = 'stable';
             if (newTypoRate < existing.typoRate - 0.1) trend = 'improving';
             else if (newTypoRate > existing.typoRate + 0.1) trend = 'worsening';
 
-            // Calculate severity score
             const severityScore = Math.min(
               100,
               Math.round(newTypoRate * 40 + (newAvgTime / 1000) * 30 + 30)
             );
 
-            // Update tags
             const tags: string[] = [];
             if (newTypoRate > 0.3) tags.push('typo-prone');
             if (newAvgTime > 2000) tags.push('slow');
@@ -471,7 +430,6 @@ export const useTypingStore = create<TypingState>()(
               tags,
             });
           } else if (typoRate > 0.3 || wordTime > 2000) {
-            // Add new problem word
             const severityScore = Math.min(
               100,
               Math.round(typoRate * 40 + (wordTime / 1000) * 30 + 30)
@@ -496,14 +454,12 @@ export const useTypingStore = create<TypingState>()(
           }
         });
 
-        // Convert map back to array and sort by severity
         const updatedProblemWords = Array.from(problemMap.values()).sort(
           (a, b) => b.severityScore - a.severityScore
         );
 
         set({ problemWords: updatedProblemWords });
 
-        // Sync problem words to Supabase (non-blocking)
         syncProblemWords(updatedProblemWords).catch(console.error);
       },
     }),

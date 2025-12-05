@@ -9,7 +9,6 @@ import { useTypingStore } from '@/store/typingStore';
 export default function Home() {
   const { status, resetTest } = useTypingStore();
 
-  // Handle Tab key untuk restart
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
@@ -24,24 +23,20 @@ export default function Home() {
 
   return (
     <div className="space-y-8">
-      {/* Heading SEO-friendly (tersembunyi secara visual tapi bisa dibaca search engine) */}
       <h1 className="sr-only">
         TypeMaster - Tes Mengetik dengan Analitik Mendalam
       </h1>
 
-      {/* Settings */}
       {status !== 'running' && (
         <section aria-label="Pengaturan Test">
           <Settings />
         </section>
       )}
 
-      {/* Area Mengetik atau Hasil */}
       <section aria-label="Area Tes Mengetik">
         {status === 'finished' ? <Results /> : <TypingArea />}
       </section>
 
-      {/* Bagian fitur untuk SEO (ditampilkan hanya saat idle) */}
       {status === 'idle' && (
         <section className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6">
           <article className="glass-card rounded-2xl p-6">
