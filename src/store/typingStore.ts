@@ -146,7 +146,7 @@ export const useTypingStore = create<TypingState>()(
             const prevIndex = state.currentWordIndex - 1;
             const prevWordResult = state.wordResults[prevIndex];
 
-            if (prevWordResult) {
+            if (prevWordResult && !prevWordResult.correct) {
               const newWordResults = state.wordResults.slice(0, -1);
 
               set({
