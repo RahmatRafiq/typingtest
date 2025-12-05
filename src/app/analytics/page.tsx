@@ -156,8 +156,8 @@ export default function AnalyticsPage() {
       {chartData.length >= 2 && (
         <section>
           <h2 className="text-xl font-semibold text-white mb-4">Tren Performa</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="glass-card rounded-2xl p-6">
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="glass-card rounded-2xl p-6 flex-1 min-w-0">
               <h3 className="text-lg font-medium text-white mb-4">WPM per Test</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -198,7 +198,7 @@ export default function AnalyticsPage() {
               </div>
             </div>
 
-            <div className="glass-card rounded-2xl p-6">
+            <div className="glass-card rounded-2xl p-6 flex-1 min-w-0">
               <h3 className="text-lg font-medium text-white mb-4">Akurasi & Konsistensi</h3>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
