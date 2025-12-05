@@ -1,10 +1,10 @@
-import { WordResult, ProblemWord } from '@/types';
+import type { WordResult } from '@/types';
 import { getProblemWords } from '@/lib/words';
 import { syncProblemWords } from '@/lib/supabaseSync';
-import { TypingState, StateCreator } from '../types';
+import { PracticeSliceCreator } from '../types';
 
-export const createPracticeSlice: StateCreator = (set, get) => ({
-  startPracticeMode: (customWords: string[]) => {
+export const createPracticeSlice: PracticeSliceCreator = (set, get) => ({
+  startPracticeMode: (customWords) => {
     const { problemWords } = get();
     const problemWordsList = problemWords.map((p) => p.word);
     const words =
@@ -31,7 +31,7 @@ export const createPracticeSlice: StateCreator = (set, get) => ({
     });
   },
 
-  updateProblemWords: (results: WordResult[]) => {
+  updateProblemWords: (results) => {
     const { problemWords } = get();
     const problemMap = new Map(problemWords.map((p) => [p.word, p]));
 

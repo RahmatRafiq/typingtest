@@ -1,9 +1,9 @@
 import { TestResults, TestSession } from '@/types';
 import { getWords } from '@/lib/words';
 import { syncTestSession } from '@/lib/supabaseSync';
-import { TypingState, StateCreator } from '../types';
+import { TestSliceCreator } from '../types';
 
-export const createTestSlice: StateCreator = (set, get) => ({
+export const createTestSlice: TestSliceCreator = (set, get) => ({
   startTest: () => {
     const { handMode, duration, testMode } = get();
     const wordCount = testMode === 'words' ? duration : 200;

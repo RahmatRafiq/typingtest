@@ -1,9 +1,9 @@
 import { Keystroke } from '@/types';
 import { getWordHand } from '@/lib/words';
-import { TypingState, StateCreator } from '../types';
+import { InputSliceCreator } from '../types';
 
-export const createInputSlice: StateCreator = (set, get) => ({
-  handleKeyPress: (key: string) => {
+export const createInputSlice: InputSliceCreator = (set, get) => ({
+  handleKeyPress: (key) => {
     const state = get();
     if (state.status !== 'running') return;
     if (key === ' ') return;
