@@ -14,25 +14,12 @@ export default function PracticePage() {
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
 
-  // Handle Tab key untuk restart
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab' && status === 'running') {
-        e.preventDefault();
-        resetTest();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [status, resetTest]);
-
-  const handleStartPractice = () => {
+  // Fungsi untuk generate kata berdasarkan mode
+  const generateWords = () => {
     let words: string[] = [];
 
     switch (practiceMode) {
       case 'problem-words':
-        // Ambil kata bermasalah dan campur dengan kata biasa
         const problems = problemWords.slice(0, Math.floor(wordCount * 0.7)).map(p => p.word);
         const fillerWords = ['dan', 'yang', 'di', 'ini', 'itu', 'dengan', 'untuk', 'pada', 'adalah', 'dari'];
         const fillerCount = wordCount - problems.length;
@@ -40,12 +27,10 @@ export default function PracticePage() {
         for (let i = 0; i < fillerCount; i++) {
           words.push(fillerWords[i % fillerWords.length]);
         }
-        // Acak
         words = words.sort(() => Math.random() - 0.5);
         break;
 
       case 'left-hand':
-        // Kata-kata tangan kiri
         const leftWords = ['ada', 'baca', 'cara', 'data', 'fakta', 'gaji', 'harga', 'jadi', 'kata', 'lama',
           'masa', 'nama', 'pasar', 'rasa', 'saat', 'waktu', 'besar', 'dekat', 'dapat', 'dalam',
           'keras', 'kelas', 'kerja', 'hasil', 'harus', 'jalan', 'jawab', 'kawan', 'lawan', 'makan',
@@ -54,7 +39,6 @@ export default function PracticePage() {
         break;
 
       case 'right-hand':
-        // Kata-kata fokus tangan kanan
         const rightWords = ['ibu', 'ini', 'itu', 'ilmu', 'info', 'ijin', 'ikut', 'imun', 'ingat', 'ingin',
           'hijau', 'hitung', 'hidup', 'hilang', 'hingga', 'hubung', 'hukum', 'hutan', 'ikhlas', 'iklim',
           'jujur', 'juri', 'juni', 'juli', 'kini', 'kiri', 'klik', 'lilin', 'liput', 'mimpi',
@@ -64,13 +48,36 @@ export default function PracticePage() {
 
       case 'custom':
         words = customWords.trim().split(/\s+/).filter(w => w.length > 0);
-        if (words.length === 0) {
-          alert('Silakan masukkan beberapa kata untuk dilatih');
-          return;
-        }
         break;
     }
 
+    return words;
+  };
+
+  // Handle keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Tab untuk restart dengan mode yang sama
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const words = generateWords();
+        if (words.length > 0) {
+          startPracticeMode(words);
+        }
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [practiceMode, wordCount, customWords, problemWords, startPracticeMode]);
+
+  const handleStartPractice = () => {
+    const words = generateWords();
+    if (practiceMode === 'custom' && words.length === 0) {
+      alert('Silakan masukkan beberapa kata untuk dilatih');
+      return;
+    }
     startPracticeMode(words);
   };
 
@@ -80,7 +87,9 @@ export default function PracticePage() {
       <div className="space-y-6 sm:space-y-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Latihan Selesai!</h1>
-          <p className="text-gray-400 text-sm sm:text-base">Kerja bagus! Lihat hasilmu di bawah.</p>
+          <p className="text-gray-400 text-sm sm:text-base">
+            Kerja bagus! Tekan <span className="text-yellow-400">Tab</span> untuk ulangi.
+          </p>
         </div>
         <Results />
       </div>
@@ -94,7 +103,7 @@ export default function PracticePage() {
         <div className="flex justify-between items-center gap-4">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-white">Mode Latihan</h1>
-            <p className="text-gray-400 text-xs sm:text-sm">Tekan Tab untuk restart</p>
+            <p className="text-gray-400 text-xs sm:text-sm">Tekan Tab untuk ulangi</p>
           </div>
           <button
             onClick={resetTest}
