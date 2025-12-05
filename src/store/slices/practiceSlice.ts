@@ -1,4 +1,3 @@
-import type { WordResult } from '@/types';
 import { getProblemWords } from '@/lib/words';
 import { syncProblemWords } from '@/lib/supabaseSync';
 import { PracticeSliceCreator } from '../types';
