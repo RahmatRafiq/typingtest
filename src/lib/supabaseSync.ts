@@ -2,6 +2,8 @@ import { supabase, getAnonymousUserId } from './supabase';
 import { TestSession, ProblemWord, WordResult } from '@/types';
 
 export async function syncTestSession(session: TestSession): Promise<boolean> {
+  if (!supabase) return false; // Supabase not configured
+
   try {
     const userId = getAnonymousUserId();
     if (!userId) return false;
@@ -21,6 +23,7 @@ export async function syncTestSession(session: TestSession): Promise<boolean> {
       total_words: session.results.totalWords,
       correct_words: session.results.correctWords,
       words_data: session.words,
+      is_practice: session.isPractice || false,
     });
 
     if (error) {
@@ -36,6 +39,8 @@ export async function syncTestSession(session: TestSession): Promise<boolean> {
 }
 
 export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boolean> {
+  if (!supabase) return false; // Supabase not configured
+
   try {
     const userId = getAnonymousUserId();
     if (!userId) return false;
@@ -74,6 +79,8 @@ export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boo
 }
 
 export async function loadTestHistory(): Promise<TestSession[]> {
+  if (!supabase) return []; // Supabase not configured
+
   try {
     const userId = getAnonymousUserId();
     if (!userId) return [];
@@ -111,6 +118,7 @@ export async function loadTestHistory(): Promise<TestSession[]> {
         problemWords: [],
         slowWords: [],
       },
+      isPractice: !!row.is_practice,
     }));
   } catch (err) {
     console.error('Error loading test history:', err);
@@ -119,6 +127,8 @@ export async function loadTestHistory(): Promise<TestSession[]> {
 }
 
 export async function loadProblemWords(): Promise<ProblemWord[]> {
+  if (!supabase) return []; // Supabase not configured
+
   try {
     const userId = getAnonymousUserId();
     if (!userId) return [];
@@ -159,6 +169,8 @@ export async function getUserStats(): Promise<{
   avgAccuracy: number;
   bestWpm: number;
 } | null> {
+  if (!supabase) return null; // Supabase not configured
+
   try {
     const userId = getAnonymousUserId();
     if (!userId) return null;

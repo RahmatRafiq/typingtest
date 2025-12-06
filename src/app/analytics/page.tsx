@@ -20,36 +20,40 @@ import {
 
 export default function AnalyticsPage() {
   const { testHistory, problemWords, resetAllData } = useTypingStore();
+
+  // Filter out practice sessions for analytics
+  const validHistory = testHistory.filter(t => !t.isPractice);
+
   const [showResetModal, setShowResetModal] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const CONFIRM_WORD = 'HAPUS';
 
-  const totalTests = testHistory.length;
+  const totalTests = validHistory.length;
   const avgWpm = totalTests > 0
-    ? Math.round(testHistory.reduce((sum, t) => sum + t.results.wpm, 0) / totalTests)
+    ? Math.round(validHistory.reduce((sum, t) => sum + t.results.wpm, 0) / totalTests)
     : 0;
   const avgAccuracy = totalTests > 0
-    ? Math.round(testHistory.reduce((sum, t) => sum + t.results.accuracy, 0) / totalTests)
+    ? Math.round(validHistory.reduce((sum, t) => sum + t.results.accuracy, 0) / totalTests)
     : 0;
   const bestWpm = totalTests > 0
-    ? Math.max(...testHistory.map((t) => t.results.wpm))
+    ? Math.max(...validHistory.map((t) => t.results.wpm))
     : 0;
 
-  const recentTests = testHistory.slice(0, 10);
+  const recentTests = validHistory.slice(0, 10);
 
   const topProblemWords = problemWords.slice(0, 15);
 
-  const wpmTrend = testHistory.slice(0, 10).map((t) => t.results.wpm);
+  const wpmTrend = validHistory.slice(0, 10).map((t) => t.results.wpm);
   const trendDirection =
     wpmTrend.length >= 2
       ? wpmTrend[0] > wpmTrend[wpmTrend.length - 1]
         ? 'meningkat'
         : wpmTrend[0] < wpmTrend[wpmTrend.length - 1]
-        ? 'menurun'
-        : 'stabil'
+          ? 'menurun'
+          : 'stabil'
       : 'stabil';
 
-  const chartData = testHistory
+  const chartData = validHistory
     .slice(0, 20)
     .reverse()
     .map((test, index) => ({
@@ -67,42 +71,42 @@ export default function AnalyticsPage() {
   const handModeData = [
     {
       name: 'Semua',
-      tests: testHistory.filter((t) => t.handMode === 'both').length,
+      tests: validHistory.filter((t) => t.handMode === 'both').length,
       avgWpm: Math.round(
-        testHistory
+        validHistory
           .filter((t) => t.handMode === 'both')
           .reduce((sum, t) => sum + t.results.wpm, 0) /
-          (testHistory.filter((t) => t.handMode === 'both').length || 1)
+        (validHistory.filter((t) => t.handMode === 'both').length || 1)
       ),
     },
     {
       name: 'Kiri',
-      tests: testHistory.filter((t) => t.handMode === 'left').length,
+      tests: validHistory.filter((t) => t.handMode === 'left').length,
       avgWpm: Math.round(
-        testHistory
+        validHistory
           .filter((t) => t.handMode === 'left')
           .reduce((sum, t) => sum + t.results.wpm, 0) /
-          (testHistory.filter((t) => t.handMode === 'left').length || 1)
+        (validHistory.filter((t) => t.handMode === 'left').length || 1)
       ),
     },
     {
       name: 'Kanan',
-      tests: testHistory.filter((t) => t.handMode === 'right').length,
+      tests: validHistory.filter((t) => t.handMode === 'right').length,
       avgWpm: Math.round(
-        testHistory
+        validHistory
           .filter((t) => t.handMode === 'right')
           .reduce((sum, t) => sum + t.results.wpm, 0) /
-          (testHistory.filter((t) => t.handMode === 'right').length || 1)
+        (validHistory.filter((t) => t.handMode === 'right').length || 1)
       ),
     },
     {
       name: 'Bergantian',
-      tests: testHistory.filter((t) => t.handMode === 'alternating').length,
+      tests: validHistory.filter((t) => t.handMode === 'alternating').length,
       avgWpm: Math.round(
-        testHistory
+        validHistory
           .filter((t) => t.handMode === 'alternating')
           .reduce((sum, t) => sum + t.results.wpm, 0) /
-          (testHistory.filter((t) => t.handMode === 'alternating').length || 1)
+        (validHistory.filter((t) => t.handMode === 'alternating').length || 1)
       ),
     },
   ].filter((d) => d.tests > 0);
@@ -269,22 +273,20 @@ export default function AnalyticsPage() {
       {totalTests >= 2 && (
         <div className="glass-card rounded-2xl p-5 flex items-center gap-4">
           <div
-            className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-              trendDirection === 'meningkat'
-                ? 'bg-green-500/20'
-                : trendDirection === 'menurun'
+            className={`w-12 h-12 rounded-xl flex items-center justify-center ${trendDirection === 'meningkat'
+              ? 'bg-green-500/20'
+              : trendDirection === 'menurun'
                 ? 'bg-red-500/20'
                 : 'bg-gray-500/20'
-            }`}
+              }`}
           >
             <svg
-              className={`w-6 h-6 ${
-                trendDirection === 'meningkat'
-                  ? 'text-green-400 rotate-[-45deg]'
-                  : trendDirection === 'menurun'
+              className={`w-6 h-6 ${trendDirection === 'meningkat'
+                ? 'text-green-400 rotate-[-45deg]'
+                : trendDirection === 'menurun'
                   ? 'text-red-400 rotate-45'
                   : 'text-gray-400'
-              }`}
+                }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -304,8 +306,8 @@ export default function AnalyticsPage() {
                 trendDirection === 'meningkat'
                   ? 'text-green-400'
                   : trendDirection === 'menurun'
-                  ? 'text-red-400'
-                  : 'text-gray-400'
+                    ? 'text-red-400'
+                    : 'text-gray-400'
               }
             >
               {trendDirection}
@@ -357,8 +359,8 @@ export default function AnalyticsPage() {
                           word.typoRate > 0.5
                             ? 'text-red-400'
                             : word.typoRate > 0.3
-                            ? 'text-yellow-400'
-                            : 'text-gray-400'
+                              ? 'text-yellow-400'
+                              : 'text-gray-400'
                         }
                       >
                         {Math.round(word.typoRate * 100)}%
@@ -369,38 +371,35 @@ export default function AnalyticsPage() {
                     </td>
                     <td className="p-4 text-center">
                       <span
-                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                          word.severityScore > 60
-                            ? 'bg-red-500/20 text-red-400'
-                            : word.severityScore > 30
+                        className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${word.severityScore > 60
+                          ? 'bg-red-500/20 text-red-400'
+                          : word.severityScore > 30
                             ? 'bg-yellow-500/20 text-yellow-400'
                             : 'bg-green-500/20 text-green-400'
-                        }`}
+                          }`}
                       >
                         {word.severityScore}
                       </span>
                     </td>
                     <td className="p-4 text-center">
-                      <span className={`text-sm ${
-                        word.improvementTrend === 'improving'
-                          ? 'text-green-400'
-                          : word.improvementTrend === 'worsening'
+                      <span className={`text-sm ${word.improvementTrend === 'improving'
+                        ? 'text-green-400'
+                        : word.improvementTrend === 'worsening'
                           ? 'text-red-400'
                           : 'text-gray-400'
-                      }`}>
+                        }`}>
                         {word.improvementTrend === 'improving' && 'Membaik'}
                         {word.improvementTrend === 'worsening' && 'Memburuk'}
                         {word.improvementTrend === 'stable' && 'Stabil'}
                       </span>
                     </td>
                     <td className="p-4 text-center">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        word.hand === 'left'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : word.hand === 'right'
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${word.hand === 'left'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : word.hand === 'right'
                           ? 'bg-purple-500/20 text-purple-400'
                           : 'bg-gray-500/20 text-gray-400'
-                      }`}>
+                        }`}>
                         {word.hand === 'left' && 'Kiri'}
                         {word.hand === 'right' && 'Kanan'}
                         {word.hand === 'mixed' && 'Campur'}
@@ -454,15 +453,14 @@ export default function AnalyticsPage() {
                       {test.mode === 'time' ? `${test.duration}s` : `${test.duration} kata`}
                     </td>
                     <td className="p-4 text-center">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        test.handMode === 'left'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : test.handMode === 'right'
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${test.handMode === 'left'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : test.handMode === 'right'
                           ? 'bg-purple-500/20 text-purple-400'
                           : test.handMode === 'alternating'
-                          ? 'bg-orange-500/20 text-orange-400'
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
+                            ? 'bg-orange-500/20 text-orange-400'
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
                         {test.handMode === 'left' && 'Kiri'}
                         {test.handMode === 'right' && 'Kanan'}
                         {test.handMode === 'both' && 'Semua'}
@@ -478,8 +476,8 @@ export default function AnalyticsPage() {
                           test.results.accuracy >= 95
                             ? 'text-green-400'
                             : test.results.accuracy >= 85
-                            ? 'text-yellow-400'
-                            : 'text-red-400'
+                              ? 'text-yellow-400'
+                              : 'text-red-400'
                         }
                       >
                         {test.results.accuracy}%
@@ -605,11 +603,10 @@ export default function AnalyticsPage() {
                   }
                 }}
                 disabled={confirmText !== CONFIRM_WORD}
-                className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${
-                  confirmText === CONFIRM_WORD
-                    ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
-                }`}
+                className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all ${confirmText === CONFIRM_WORD
+                  ? 'bg-red-600 text-white hover:bg-red-700 cursor-pointer'
+                  : 'bg-gray-800 text-gray-500 cursor-not-allowed border border-gray-700'
+                  }`}
               >
                 Hapus Semua Data
               </button>

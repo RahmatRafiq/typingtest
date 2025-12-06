@@ -29,6 +29,7 @@ export interface TestSession {
   duration: number;
   words: WordResult[];
   results: TestResults;
+  isPractice: boolean;
 }
 
 export interface TestResults {
@@ -85,6 +86,7 @@ export interface DbTestSession {
   total_words: number;
   correct_words: number;
   words_data: WordResult[];
+  is_practice: boolean;
 }
 
 export interface DbProblemWord {

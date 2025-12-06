@@ -27,6 +27,7 @@ export const createPracticeSlice: PracticeSliceCreator = (set, get) => ({
       results: null,
       testMode: 'words',
       duration: words.length,
+      isPractice: true,
     });
   },
 
