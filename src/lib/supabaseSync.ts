@@ -23,6 +23,7 @@ export async function syncTestSession(session: TestSession): Promise<boolean> {
       total_words: session.results.totalWords,
       correct_words: session.results.correctWords,
       words_data: session.words,
+      is_practice: session.isPractice || false,
     });
 
     if (error) {
@@ -117,6 +118,7 @@ export async function loadTestHistory(): Promise<TestSession[]> {
         problemWords: [],
         slowWords: [],
       },
+      isPractice: !!row.is_practice,
     }));
   } catch (err) {
     console.error('Error loading test history:', err);

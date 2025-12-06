@@ -29,6 +29,7 @@ export interface TypingStateData {
   problemWords: ProblemWord[];
   testHistory: TestSession[];
   wpmHistory: number[];
+  isPractice: boolean;
 }
 
 export interface SettingsSlice {

@@ -24,6 +24,7 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       furthestWordIndex: 0,
       results: null,
       wpmHistory: [],
+      isPractice: false,
     });
   },
 
@@ -184,7 +185,7 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       slowWords: [...new Set(slowWords)],
     };
 
-    const session: TestSession = {
+    const newHistoryItem: TestSession = {
       id: crypto.randomUUID(),
       timestamp: endTime,
       mode: state.testMode,
@@ -192,9 +193,10 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       duration: state.duration,
       words: state.wordResults,
       results,
+      isPractice: state.isPractice,
     };
 
-    const newHistory = [session, ...state.testHistory].slice(0, 50);
+    const newHistory = [newHistoryItem, ...state.testHistory];
 
     set({
       status: 'finished',
@@ -203,7 +205,10 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       testHistory: newHistory,
     });
 
-    syncTestSession(session).catch(console.error);
+    // Update problem words
     get().updateProblemWords(state.wordResults);
+
+    // Sync to Supabase
+    syncTestSession(newHistoryItem).catch(console.error);
   },
 });

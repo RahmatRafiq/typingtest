@@ -21,7 +21,8 @@ CREATE TABLE IF NOT EXISTS test_sessions (
     correct_chars INTEGER NOT NULL,
     total_words INTEGER NOT NULL,
     correct_words INTEGER NOT NULL,
-    words_data JSONB NOT NULL DEFAULT '[]'::jsonb -- Array of WordResult objects
+    words_data JSONB NOT NULL DEFAULT '[]'::jsonb, -- Array of WordResult objects
+    is_practice BOOLEAN DEFAULT FALSE
 );
 
 -- Create index on user_id for faster queries
@@ -72,6 +73,11 @@ CREATE TABLE IF NOT EXISTS user_stats (
 CREATE OR REPLACE FUNCTION update_user_stats()
 RETURNS TRIGGER AS $$
 BEGIN
+    -- Ignore practice sessions for overall stats
+    IF NEW.is_practice THEN
+        RETURN NEW;
+    END IF;
+
     INSERT INTO user_stats (user_id, total_tests, avg_wpm, avg_accuracy, best_wpm)
     VALUES (
         NEW.user_id,

@@ -14,7 +14,7 @@ import {
 } from 'recharts';
 
 export default function Results() {
-  const { status, results, wordResults, resetTest } = useTypingStore();
+  const { status, results, wordResults, resetTest, isPractice } = useTypingStore();
 
   if (status !== 'finished' || !results) return null;
 
@@ -86,7 +86,12 @@ export default function Results() {
 
   return (
     <div className="animate-fadeIn">
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+        {isPractice && (
+          <div className="col-span-2 lg:col-span-5 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-xl p-3 text-center text-sm font-medium mb-4">
+            Mode Latihan - Hasil ini tidak mempengaruhi statistik global
+          </div>
+        )}
         <div className="glass-card rounded-2xl p-6 text-center">
           <div className="text-4xl lg:text-5xl font-bold text-yellow-400 mb-2">{results.wpm}</div>
           <div className="text-gray-400 text-sm uppercase tracking-wide">WPM</div>
@@ -263,13 +268,12 @@ export default function Results() {
                       </span>
                     </td>
                     <td className="py-4 text-center">
-                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-                        item.hand === 'left'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : item.hand === 'right'
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ${item.hand === 'left'
+                        ? 'bg-blue-500/20 text-blue-400'
+                        : item.hand === 'right'
                           ? 'bg-purple-500/20 text-purple-400'
                           : 'bg-gray-500/20 text-gray-400'
-                      }`}>
+                        }`}>
                         {item.hand === 'left' && 'Kiri'}
                         {item.hand === 'right' && 'Kanan'}
                         {item.hand === 'mixed' && 'Campur'}
