@@ -92,36 +92,65 @@ export default function TypingArea() {
 
   const calculateLiveWpm = useCallback(() => {
     if (wordResults.length === 0 || !useTypingStore.getState().startTime) return 0;
-    const elapsedTime = (Date.now() - useTypingStore.getState().startTime!) / 1000;
+    const elapsedTimeInMinutes = (Date.now() - useTypingStore.getState().startTime!) / 1000 / 60;
+    if (elapsedTimeInMinutes === 0) return 0;
 
     let correctChars = 0;
-    wordResults.forEach((w, index) => {
-      if (index < wordResults.length - 1) {
-        correctChars += 1;
+
+    // Count fully correct words characters
+    wordResults.forEach((w) => {
+      if (w.correct) {
+        correctChars += w.expected.length;
+        // Add space for correct words (except last one logic is handled in final calc but for live we can approximate)
+        // Actually, let's keep it simple: correct chars in correct words + correct spaces
+        correctChars++; // Assuming space after correct word is correct
+      } else {
+        // For incorrect words, we can still count correct characters if we want strictly "correct chars" metric
+        // But usually live WPM on Monkeytype is based on correct WORDs or correct CHARS depending on setting.
+        // Standard Monkeytype WPM counts correct chars.
+        const expectedChars = w.expected.split('');
+        const typedChars = w.typed.split('');
+        expectedChars.forEach((char, charIndex) => {
+          if (typedChars[charIndex] === char) correctChars++;
+        });
       }
-      const expectedChars = w.expected.split('');
-      const typedChars = w.typed.split('');
-      expectedChars.forEach((char, charIndex) => {
-        if (typedChars[charIndex] === char) {
-          correctChars += 1;
-        }
-      });
     });
 
-    return Math.round((correctChars / 5 / elapsedTime) * 60);
-  }, [wordResults]);
+    // Add current correct characters in the word being typed
+    const currentWord = words[currentWordIndex];
+    if (currentWord && currentInput) {
+      const expectedChars = currentWord.split('');
+      const typedChars = currentInput.split('');
+      expectedChars.forEach((char, charIndex) => {
+        if (typedChars[charIndex] === char) correctChars++;
+      });
+    }
+
+    // Adjust for space overflow if needed, but simple sum is good for live
+    return Math.round((correctChars / 5) / elapsedTimeInMinutes);
+  }, [wordResults, currentInput, currentWordIndex, words]);
 
   const calculateLiveAccuracy = useCallback(() => {
-    const totalKeystrokes = wordResults.reduce(
+    // Collect all keystrokes from previous words
+    const completedKeystrokes = wordResults.reduce(
       (sum, w) => sum + w.keystrokes.length,
       0
     );
-    const correctKeystrokes = wordResults.reduce(
+    const completedCorrectKeystrokes = wordResults.reduce(
       (sum, w) => sum + w.keystrokes.filter((k) => k.correct).length,
       0
     );
-    if (totalKeystrokes === 0) return 100;
-    return Math.round((correctKeystrokes / totalKeystrokes) * 100);
+
+    // Add current word keystrokes from state (need to track them or approximate)
+    // Since we don't strictly track currentWordKeystrokes in a way that is exposed easily in this component without subscribe,
+    // we can rely on completed words for stability or try to infer.
+    // However, `useTypingStore` exposes `currentWordKeystrokes`.
+    const currentKeystrokes = useTypingStore.getState().currentWordKeystrokes;
+    const currentTotal = completedKeystrokes + currentKeystrokes.length;
+    const currentCorrect = completedCorrectKeystrokes + currentKeystrokes.filter(k => k.correct).length;
+
+    if (currentTotal === 0) return 100;
+    return Math.round((currentCorrect / currentTotal) * 100);
   }, [wordResults]);
 
   const renderWord = useCallback(
@@ -133,9 +162,8 @@ export default function TypingArea() {
       return (
         <span
           key={index}
-          className={`inline-block mr-2 sm:mr-4 mb-2 sm:mb-3 text-lg sm:text-2xl font-mono transition-all duration-150 ${
-            isCurrentWord ? 'scale-105' : ''
-          }`}
+          className={`inline-block mr-2 sm:mr-4 mb-2 sm:mb-3 text-lg sm:text-2xl font-mono transition-all duration-150 ${isCurrentWord ? 'scale-105' : ''
+            }`}
         >
           {word.split('').map((char, charIndex) => {
             let className = 'text-gray-500';

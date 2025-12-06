@@ -31,6 +31,7 @@ export const useTypingStore = create<TypingState>()(
       results: null,
       problemWords: [],
       testHistory: [],
+      wpmHistory: [],
 
       // Spread slices
       ...createSettingsSlice(set, get),

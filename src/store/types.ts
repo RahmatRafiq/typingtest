@@ -28,6 +28,7 @@ export interface TypingStateData {
   results: TestResults | null;
   problemWords: ProblemWord[];
   testHistory: TestSession[];
+  wpmHistory: number[];
 }
 
 export interface SettingsSlice {
