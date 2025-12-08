@@ -71,8 +71,8 @@ export default function AnalyticsPage() {
           : 'stabil'
       : 'stabil';
 
-  const chartData = validHistory
-    .slice(0, 20)
+  // Data untuk chart WPM (lifetime - semua test)
+  const chartData = [...validHistory]
     .reverse()
     .map((test, index) => ({
       name: `#${index + 1}`,
@@ -80,6 +80,21 @@ export default function AnalyticsPage() {
       rawWpm: test.results.rawWpm,
       accuracy: test.results.accuracy,
       consistency: test.results.consistency,
+      date: new Date(test.timestamp).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+      }),
+    }));
+
+  // Data untuk chart kata benar/salah (lifetime - semua test)
+  const wordsChartData = [...validHistory]
+    .reverse()
+    .map((test, index) => ({
+      name: `#${index + 1}`,
+      benar: test.results.correctWords,
+      salah: test.results.totalWords - test.results.correctWords,
+      total: test.results.totalWords,
+      akurasiKata: Math.round((test.results.correctWords / test.results.totalWords) * 100),
       date: new Date(test.timestamp).toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'short',
@@ -233,6 +248,63 @@ export default function AnalyticsPage() {
                     />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {wordsChartData.length >= 2 && (
+        <section>
+          <h2 className="text-xl font-semibold text-white mb-4">Tren Kata Benar/Salah</h2>
+          <div className="glass-card rounded-2xl p-6">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={wordsChartData}>
+                  <defs>
+                    <linearGradient id="benarGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
+                    </linearGradient>
+                    <linearGradient id="salahGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#f87171" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                  <YAxis stroke="#9ca3af" fontSize={12} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Area
+                    type="monotone"
+                    dataKey="benar"
+                    name="Kata Benar"
+                    stroke="#4ade80"
+                    fill="url(#benarGradient)"
+                    strokeWidth={2}
+                    stackId="1"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="salah"
+                    name="Kata Salah"
+                    stroke="#f87171"
+                    fill="url(#salahGradient)"
+                    strokeWidth={2}
+                    stackId="1"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-6 mt-4 text-sm">
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-green-400"></span>
+                <span className="text-gray-400">Kata Benar</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full bg-red-400"></span>
+                <span className="text-gray-400">Kata Salah</span>
               </div>
             </div>
           </div>
