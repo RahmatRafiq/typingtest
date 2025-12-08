@@ -3,11 +3,18 @@
 import { useEffect } from 'react';
 import TypingArea from '@/components/TypingArea';
 import Settings from '@/components/Settings';
-import Results from '@/components/Results';
 import { useTypingStore } from '@/store/typingStore';
 
 export default function Home() {
   const { status, resetTest } = useTypingStore();
+
+  // Reset test jika status masih 'finished' saat kembali ke home
+  useEffect(() => {
+    if (status === 'finished') {
+      resetTest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,14 +34,14 @@ export default function Home() {
         TypeMaster - Tes Mengetik dengan Analitik Mendalam
       </h1>
 
-      {status !== 'running' && (
+      {status === 'idle' && (
         <section aria-label="Pengaturan Test">
           <Settings />
         </section>
       )}
 
       <section aria-label="Area Tes Mengetik">
-        {status === 'finished' ? <Results /> : <TypingArea />}
+        <TypingArea />
       </section>
 
       {status === 'idle' && (

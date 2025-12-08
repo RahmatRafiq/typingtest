@@ -159,11 +159,21 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       : 0;
 
     // Consistency = 100 * (1 - sd(raw wpm) / avg(raw wpm))
-    // Use samples from wpmHistory
-    const wpmSamples = state.wpmHistory;
+    // Use samples from wpmHistory (time mode) or calculate from word results (words mode)
+    let wpmSamples = state.wpmHistory;
+
+    // For words mode, calculate WPM per word as samples
+    if (wpmSamples.length === 0 && state.wordResults.length > 0) {
+      wpmSamples = state.wordResults.map((w) => {
+        const wordTime = (w.endTime - w.startTime) / 1000 / 60; // in minutes
+        const charCount = w.typed.length;
+        return wordTime > 0 ? Math.round((charCount / 5) / wordTime) : 0;
+      }).filter(wpm => wpm > 0 && wpm < 500); // filter outliers
+    }
+
     let consistency = 0;
 
-    if (wpmSamples.length > 0) {
+    if (wpmSamples.length > 1) {
       const avgRawWpm = wpmSamples.reduce((a, b) => a + b, 0) / wpmSamples.length;
       const variance = wpmSamples.reduce((sum, val) => sum + Math.pow(val - avgRawWpm, 2), 0) / wpmSamples.length;
       const sd = Math.sqrt(variance);
@@ -185,11 +195,9 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
 
     const slowWords = state.wordResults
       .filter((w) => {
-        const wordTime = w.endTime - w.startTime;
-        // Define slow as taking 2x longer than average char time * word length
-        // This is a simplified check
-        return false;
-      }) // Simplified for now as we changed metrics
+        // Define slow as taking more than 2 seconds per word
+        return (w.endTime - w.startTime) > 2000;
+      })
       .map((w) => w.expected);
 
     const results: TestResults = {

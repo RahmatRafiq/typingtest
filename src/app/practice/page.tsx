@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useTypingStore } from '@/store/typingStore';
 import TypingArea from '@/components/TypingArea';
-import Results from '@/components/Results';
 import Link from 'next/link';
 
 type PracticeMode = 'problem-words' | 'left-hand' | 'right-hand' | 'custom';
@@ -13,6 +12,14 @@ export default function PracticePage() {
   const [practiceMode, setPracticeMode] = useState<PracticeMode>('problem-words');
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
+
+  // Reset test jika status masih 'finished' saat kembali ke practice
+  useEffect(() => {
+    if (status === 'finished') {
+      resetTest();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const generateWords = () => {
     let words: string[] = [];
@@ -78,35 +85,10 @@ export default function PracticePage() {
     startPracticeMode(words);
   };
 
-  if (status === 'finished') {
-    return (
-      <div className="space-y-6 sm:space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Latihan Selesai!</h1>
-          <p className="text-gray-400 text-sm sm:text-base">
-            Kerja bagus! Tekan <span className="text-yellow-400">Tab</span> untuk ulangi.
-          </p>
-        </div>
-        <Results />
-      </div>
-    );
-  }
-
+  // TypingArea akan redirect ke /results saat selesai
   if (status === 'running') {
     return (
       <div className="space-y-6 sm:space-y-8">
-        <div className="flex justify-between items-center gap-4">
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Mode Latihan</h1>
-            <p className="text-gray-400 text-xs sm:text-sm">Tekan Tab untuk ulangi</p>
-          </div>
-          <button
-            onClick={resetTest}
-            className="px-4 py-2 sm:px-5 sm:py-2.5 glass-button text-gray-300 rounded-lg sm:rounded-xl hover:text-white text-sm sm:text-base"
-          >
-            Batal
-          </button>
-        </div>
         <TypingArea />
       </div>
     );

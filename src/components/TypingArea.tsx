@@ -1,10 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
+import { useFocus } from '@/context/FocusContext';
 
 export default function TypingArea() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const prevStatusRef = useRef<string>('idle');
+  const router = useRouter();
+  const { setFocusMode } = useFocus();
 
   const {
     status,
@@ -21,11 +26,25 @@ export default function TypingArea() {
     tick,
   } = useTypingStore();
 
+  // Focus mode: sembunyikan header saat typing
   useEffect(() => {
-    if (status === 'running' && containerRef.current) {
-      containerRef.current.focus();
+    if (status === 'running') {
+      setFocusMode(true);
+      if (containerRef.current) {
+        containerRef.current.focus();
+      }
+    } else {
+      setFocusMode(false);
     }
-  }, [status]);
+  }, [status, setFocusMode]);
+
+  // Redirect to results when test finishes (only on status change, not on mount)
+  useEffect(() => {
+    if (prevStatusRef.current === 'running' && status === 'finished') {
+      router.push('/results');
+    }
+    prevStatusRef.current = status;
+  }, [status, router]);
 
   useEffect(() => {
     if (status !== 'running' || testMode !== 'time') return;
