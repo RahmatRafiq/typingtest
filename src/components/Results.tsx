@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import Link from 'next/link';
 import {
@@ -12,8 +13,27 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
+import { ChartTooltipProps } from '@/types';
+
+// Custom tooltip component - defined outside to avoid recreation on each render
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-card rounded-lg p-3 text-sm">
+        <p className="text-white font-medium mb-1">Kata #{label}</p>
+        {payload.map((entry, index: number) => (
+          <p key={index} style={{ color: entry.color }}>
+            {entry.name}: {entry.value}{entry.name === 'Akurasi' ? '%' : entry.name === 'Waktu' ? 'ms' : ''}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function Results() {
+  const router = useRouter();
   const { status, results, wordResults, resetTest, isPractice } = useTypingStore();
 
   if (status !== 'finished' || !results) return null;
@@ -68,20 +88,9 @@ export default function Results() {
     }))
     .slice(0, 10);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="glass-card rounded-lg p-3 text-sm">
-          <p className="text-white font-medium mb-1">Kata #{label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value}{entry.name === 'Akurasi' ? '%' : entry.name === 'Waktu' ? 'ms' : ''}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
+  const handleTryAgain = () => {
+    resetTest();
+    router.push('/');
   };
 
   return (
@@ -289,7 +298,7 @@ export default function Results() {
 
       <div className="flex justify-center gap-4">
         <button
-          onClick={resetTest}
+          onClick={handleTryAgain}
           className="px-8 py-3 bg-yellow-400 text-gray-900 rounded-xl font-semibold hover:bg-yellow-300 transition-all"
         >
           Coba Lagi

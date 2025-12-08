@@ -200,3 +200,37 @@ export async function getUserStats(): Promise<{
     return null;
   }
 }
+
+export async function deleteAllUserData(): Promise<boolean> {
+  if (!supabase) return false; // Supabase not configured
+
+  try {
+    const userId = getAnonymousUserId();
+    if (!userId) return false;
+
+    // Delete test sessions
+    const { error: sessionsError } = await supabase
+      .from('test_sessions')
+      .delete()
+      .eq('user_id', userId);
+
+    if (sessionsError) {
+      console.error('Error deleting test sessions:', sessionsError);
+    }
+
+    // Delete problem words
+    const { error: wordsError } = await supabase
+      .from('problem_words')
+      .delete()
+      .eq('user_id', userId);
+
+    if (wordsError) {
+      console.error('Error deleting problem words:', wordsError);
+    }
+
+    return !sessionsError && !wordsError;
+  } catch (err) {
+    console.error('Error deleting user data:', err);
+    return false;
+  }
+}
