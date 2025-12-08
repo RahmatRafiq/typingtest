@@ -10,6 +10,11 @@ export const createInputSlice: InputSliceCreator = (set, get) => ({
 
     const now = Date.now();
 
+    // Start timer on first keystroke (for time mode)
+    if (state.startTime === null) {
+      set({ startTime: now });
+    }
+
     if (state.currentWordStartTime === null) {
       set({ currentWordStartTime: now });
     }

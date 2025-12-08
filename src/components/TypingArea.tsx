@@ -19,6 +19,7 @@ export default function TypingArea() {
     wordResults,
     timeRemaining,
     testMode,
+    startTime,
     handleKeyPress,
     handleBackspace,
     handleSpace,
@@ -47,14 +48,15 @@ export default function TypingArea() {
   }, [status, router]);
 
   useEffect(() => {
-    if (status !== 'running' || testMode !== 'time') return;
+    // Only start timer after first keystroke (when startTime is set)
+    if (status !== 'running' || testMode !== 'time' || startTime === null) return;
 
     const interval = setInterval(() => {
       tick();
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [status, testMode, tick]);
+  }, [status, testMode, startTime, tick]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {

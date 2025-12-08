@@ -15,7 +15,7 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       currentWordIndex: 0,
       currentInput: '',
       wordResults: [],
-      startTime: Date.now(),
+      startTime: null,
       endTime: null,
       timeRemaining: testMode === 'time' ? duration : Infinity,
       currentWordStartTime: null,
