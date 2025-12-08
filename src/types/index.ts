@@ -106,3 +106,26 @@ export interface DbProblemWord {
   created_at: string;
   updated_at: string;
 }
+
+// Chart types
+export interface ChartDataPoint {
+  name: string;
+  wpm: number;
+  rawWpm: number;
+  accuracy: number;
+  consistency: number;
+  date: string;
+}
+
+export interface ChartTooltipPayload {
+  color?: string;
+  name?: string;
+  value?: number;
+  payload?: ChartDataPoint;
+}
+
+export interface ChartTooltipProps {
+  active?: boolean;
+  payload?: ChartTooltipPayload[];
+  label?: string;
+}

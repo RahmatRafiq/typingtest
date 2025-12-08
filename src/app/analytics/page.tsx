@@ -17,6 +17,24 @@ import {
   ResponsiveContainer,
   Legend,
 } from 'recharts';
+import { ChartTooltipProps } from '@/types';
+
+const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="glass-card rounded-lg p-3 text-sm">
+        <p className="text-white font-medium mb-1">{payload[0]?.payload?.date || label}</p>
+        {payload.map((entry, index: number) => (
+          <p key={index} style={{ color: entry.color }}>
+            {entry.name}: {entry.value}
+            {entry.name === 'accuracy' || entry.name === 'consistency' ? '%' : ''}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
 
 export default function AnalyticsPage() {
   const { testHistory, problemWords, resetAllData } = useTypingStore();
@@ -110,23 +128,6 @@ export default function AnalyticsPage() {
       ),
     },
   ].filter((d) => d.tests > 0);
-
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="glass-card rounded-lg p-3 text-sm">
-          <p className="text-white font-medium mb-1">{payload[0]?.payload?.date || label}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={index} style={{ color: entry.color }}>
-              {entry.name}: {entry.value}
-              {entry.name === 'accuracy' || entry.name === 'consistency' ? '%' : ''}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
 
   return (
     <div className="space-y-8">
@@ -282,7 +283,7 @@ export default function AnalyticsPage() {
           >
             <svg
               className={`w-6 h-6 ${trendDirection === 'meningkat'
-                ? 'text-green-400 rotate-[-45deg]'
+                ? 'text-green-400 -rotate-45'
                 : trendDirection === 'menurun'
                   ? 'text-red-400 rotate-45'
                   : 'text-gray-400'
@@ -498,23 +499,23 @@ export default function AnalyticsPage() {
         <h2 className="text-lg font-semibold text-white mb-4">Tips untuk Meningkat</h2>
         <ul className="space-y-3 text-gray-400 text-sm">
           <li className="flex items-start gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 shrink-0" />
             Latih kata bermasalahmu setiap hari menggunakan mode Latihan
           </li>
           <li className="flex items-start gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 shrink-0" />
             Fokus pada akurasi dulu, baru kecepatan - akurasi menghasilkan ketikan lebih cepat
           </li>
           <li className="flex items-start gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 shrink-0" />
             Gunakan mode tangan spesifik untuk menguatkan tangan yang lebih lemah
           </li>
           <li className="flex items-start gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 shrink-0" />
             Istirahat setiap 15-20 menit untuk menghindari kelelahan
           </li>
           <li className="flex items-start gap-3">
-            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 flex-shrink-0" />
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 mt-2 shrink-0" />
             Jaga postur dan posisi tangan yang benar saat mengetik
           </li>
         </ul>
