@@ -15,12 +15,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://typingtest-olive.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "TypeMaster - Advanced Typing Test with Deep Analytics",
     template: "%s | TypeMaster"
   },
-  description: "Master your typing skills with personalized training. Identify your weak words, track progress, and practice with targeted drills. Features left/right hand modes, detailed analytics, and problem word detection.",
+  description: "Master typing with personalized training. Track weak words, analyze progress, and practice with targeted drills. Features hand modes and analytics.",
+  alternates: {
+    canonical: "/",
+  },
   keywords: [
     "typing test",
     "typing speed",
@@ -38,7 +44,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://typemaster.app",
+    url: siteUrl,
     siteName: "TypeMaster",
     title: "TypeMaster - Advanced Typing Test with Deep Analytics",
     description: "Master your typing skills with personalized training. Identify weak words and practice with targeted drills.",
