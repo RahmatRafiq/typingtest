@@ -91,35 +91,56 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
     let totalKeystrokes = 0;
     let correctKeystrokes = 0;
 
+    // Process completed words
     state.wordResults.forEach((w, index) => {
       // For Raw WPM: count all typed characters including spaces
       totalChars += w.typed.length;
 
-      // For WPM: count only correct characters in correct words
-      if (w.correct) {
-        correctChars += w.expected.length;
-      } else {
-        // Even in incorrect words, some chars might be correct, but Monkeytype usually 
-        // counts "correct chars" as characters in words that are fully correct OR 
-        // characters that are correct within the word.
-        // Let's stick to the definition: "correct characters"
-        const expectedChars = w.expected.split('');
-        const typedChars = w.typed.split('');
-        expectedChars.forEach((char, charIndex) => {
-          if (typedChars[charIndex] === char) correctChars++;
-        });
-      }
+      // For WPM: count correct characters (Monkeytype style - char by char comparison)
+      const expectedChars = w.expected.split('');
+      const typedChars = w.typed.split('');
+      expectedChars.forEach((char, charIndex) => {
+        if (typedChars[charIndex] === char) correctChars++;
+      });
 
-      // Add space if not last word
+      // Add space between words (space is also a character)
       if (index < state.wordResults.length - 1) {
-        totalChars++; // space is a char
-        if (w.correct) correctChars++; // space after correct word is correct
+        totalChars++; // space counts as typed char
+        correctChars++; // space between words is always correct (user pressed space)
       }
 
       // Accuracy calculations
       totalKeystrokes += w.keystrokes.length;
       correctKeystrokes += w.keystrokes.filter(k => k.correct).length;
     });
+
+    // Include current word being typed when time ran out (Monkeytype style)
+    if (state.currentInput.length > 0) {
+      const currentWord = state.words[state.currentWordIndex];
+      const currentTyped = state.currentInput;
+
+      // Add to total chars
+      totalChars += currentTyped.length;
+
+      // Count correct chars in current partial word
+      if (currentWord) {
+        const expectedChars = currentWord.split('');
+        const typedChars = currentTyped.split('');
+        expectedChars.forEach((char, charIndex) => {
+          if (typedChars[charIndex] === char) correctChars++;
+        });
+      }
+
+      // Add space after last completed word if there's a current word being typed
+      if (state.wordResults.length > 0) {
+        totalChars++; // space before current word
+        correctChars++; // space is correct
+      }
+
+      // Add keystrokes from current word
+      totalKeystrokes += state.currentWordKeystrokes.length;
+      correctKeystrokes += state.currentWordKeystrokes.filter(k => k.correct).length;
+    }
 
     const incorrectChars = totalChars - correctChars;
     const totalWords = state.wordResults.length;
