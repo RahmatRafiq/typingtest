@@ -35,9 +35,17 @@ export default function TypingArea() {
         containerRef.current.focus();
       }
     } else {
+      // Reset focus mode saat status bukan 'running' (termasuk 'finished' dan 'idle')
       setFocusMode(false);
     }
   }, [status, setFocusMode]);
+
+  // Pastikan focus mode di-reset saat komponen unmount
+  useEffect(() => {
+    return () => {
+      setFocusMode(false);
+    };
+  }, [setFocusMode]);
 
   // Redirect to results when test finishes (only on status change, not on mount)
   useEffect(() => {
