@@ -4,14 +4,17 @@ import { useEffect } from 'react';
 import TypingArea from '@/components/TypingArea';
 import Settings from '@/components/Settings';
 import { useTypingStore } from '@/store/typingStore';
+import { useFocus } from '@/context/FocusContext';
 
 export default function Home() {
   const { status, resetTest } = useTypingStore();
+  const { setFocusMode } = useFocus();
 
-  // Reset test jika status masih 'finished' saat kembali ke home
+  // Reset test dan focus mode jika status masih 'finished' saat kembali ke home
   useEffect(() => {
     if (status === 'finished') {
       resetTest();
+      setFocusMode(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

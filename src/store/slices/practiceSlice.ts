@@ -64,9 +64,10 @@ export const createPracticeSlice: PracticeSliceCreator = (set, get) => ({
 
         const tags: string[] = [];
         if (newTypoRate > 0.3) tags.push('typo-prone');
-        if (newAvgTime > 2000) tags.push('slow');
+        if (newAvgTime > 2500) tags.push('slow');
 
-        if (newTypoRate < 0.1 && newTotalAppearances >= 5 && trend === 'improving') {
+        // Kata bisa dihapus jika: typoRate < 15%, sudah muncul 3x, dan trend membaik atau stabil
+        if (newTypoRate < 0.15 && newTotalAppearances >= 3 && (trend === 'improving' || trend === 'stable')) {
           problemMap.delete(result.expected);
         } else {
           problemMap.set(result.expected, {
@@ -82,14 +83,14 @@ export const createPracticeSlice: PracticeSliceCreator = (set, get) => ({
             tags,
           });
         }
-      } else if (typoRate > 0.3 || wordTime > 2000) {
+      } else if (typoRate > 0.3 || wordTime > 2500) {
         const severityScore = Math.min(
           100,
           Math.round(typoRate * 40 + (wordTime / 1000) * 30 + 30)
         );
         const tags: string[] = [];
         if (typoRate > 0.3) tags.push('typo-prone');
-        if (wordTime > 2000) tags.push('slow');
+        if (wordTime > 2500) tags.push('slow');
 
         problemMap.set(result.expected, {
           word: result.expected,

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTypingStore } from '@/store/typingStore';
+import { useFocus } from '@/context/FocusContext';
 import TypingArea from '@/components/TypingArea';
 import Link from 'next/link';
 
@@ -9,14 +10,16 @@ type PracticeMode = 'problem-words' | 'left-hand' | 'right-hand' | 'custom';
 
 export default function PracticePage() {
   const { status, problemWords, startPracticeMode, resetTest } = useTypingStore();
+  const { setFocusMode } = useFocus();
   const [practiceMode, setPracticeMode] = useState<PracticeMode>('problem-words');
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
 
-  // Reset test jika status masih 'finished' saat kembali ke practice
+  // Reset test dan focus mode jika status masih 'finished' saat kembali ke practice
   useEffect(() => {
     if (status === 'finished') {
       resetTest();
+      setFocusMode(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

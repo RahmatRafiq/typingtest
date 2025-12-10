@@ -195,8 +195,8 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
 
     const slowWords = state.wordResults
       .filter((w) => {
-        // Define slow as taking more than 2 seconds per word
-        return (w.endTime - w.startTime) > 2000;
+        // Define slow as taking more than 2.5 seconds per word
+        return (w.endTime - w.startTime) > 2500;
       })
       .map((w) => w.expected);
 
