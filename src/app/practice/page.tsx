@@ -1,83 +1,69 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useTypingStore } from '@/store/typingStore';
-import { useFocus } from '@/context/FocusContext';
 import TypingArea from '@/components/TypingArea';
 import Link from 'next/link';
+import { WORDS } from '@/lib/words';
+import { TYPING_THRESHOLDS } from '@/lib/constants';
+import { useResetOnMount } from '@/hooks/useResetOnMount';
+import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
 
 type PracticeMode = 'problem-words' | 'left-hand' | 'right-hand' | 'custom';
 
 export default function PracticePage() {
-  const { status, problemWords, startPracticeMode, resetTest } = useTypingStore();
-  const { setFocusMode } = useFocus();
+  const { status, problemWords, startPracticeMode } = useTypingStore();
   const [practiceMode, setPracticeMode] = useState<PracticeMode>('problem-words');
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
 
-  // Reset test dan focus mode jika status masih 'finished' saat kembali ke practice
-  useEffect(() => {
-    if (status === 'finished') {
-      resetTest();
-      setFocusMode(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  useResetOnMount();
 
-  const generateWords = () => {
+  const generateWords = useCallback(() => {
     let words: string[] = [];
 
     switch (practiceMode) {
       case 'problem-words':
         const problems = problemWords.slice(0, Math.floor(wordCount * 0.7)).map(p => p.word);
-        const fillerWords = ['dan', 'yang', 'di', 'ini', 'itu', 'dengan', 'untuk', 'pada', 'adalah', 'dari'];
         const fillerCount = wordCount - problems.length;
         words = [...problems];
+        const mixedWords = [...WORDS.mixed];
         for (let i = 0; i < fillerCount; i++) {
-          words.push(fillerWords[i % fillerWords.length]);
+          words.push(mixedWords[i % mixedWords.length]);
         }
         words = words.sort(() => Math.random() - 0.5);
         break;
 
       case 'left-hand':
-        const leftWords = ['ada', 'baca', 'cara', 'data', 'fakta', 'gaji', 'harga', 'jadi', 'kata', 'lama',
-          'masa', 'nama', 'pasar', 'rasa', 'saat', 'waktu', 'besar', 'dekat', 'dapat', 'dalam',
-          'keras', 'kelas', 'kerja', 'hasil', 'harus', 'jalan', 'jawab', 'kawan', 'lawan', 'makan',
-          'mahal', 'pakai', 'ramai', 'salah', 'sama', 'tanah', 'tangan', 'warga', 'wajah', 'tanpa'];
-        words = leftWords.sort(() => Math.random() - 0.5).slice(0, wordCount);
+        words = [...WORDS.left].sort(() => Math.random() - 0.5).slice(0, wordCount);
         break;
 
       case 'right-hand':
-        const rightWords = ['ibu', 'ini', 'itu', 'ilmu', 'info', 'ijin', 'ikut', 'imun', 'ingat', 'ingin',
-          'hijau', 'hitung', 'hidup', 'hilang', 'hingga', 'hubung', 'hukum', 'hutan', 'ikhlas', 'iklim',
-          'jujur', 'juri', 'juni', 'juli', 'kini', 'kiri', 'klik', 'lilin', 'liput', 'mimpi',
-          'milik', 'miliki', 'minim', 'minum', 'minyak', 'mirip', 'miskin', 'musik', 'mukim', 'nyaman'];
-        words = rightWords.sort(() => Math.random() - 0.5).slice(0, wordCount);
+        words = [...WORDS.right].sort(() => Math.random() - 0.5).slice(0, wordCount);
         break;
 
       case 'custom':
-        words = customWords.trim().split(/\s+/).filter(w => w.length > 0);
+        words = customWords
+          .trim()
+          .split(/\s+/)
+          .filter(w => w.length > 0 && w.length <= TYPING_THRESHOLDS.MAX_WORD_LENGTH)
+          .slice(0, TYPING_THRESHOLDS.MAX_CUSTOM_WORDS);
         break;
     }
 
     return words;
-  };
+  }, [practiceMode, wordCount, customWords, problemWords]);
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Tab') {
-        e.preventDefault();
-        const words = generateWords();
-        if (words.length > 0) {
-          startPracticeMode(words);
-        }
-        return;
+  const handleTabPress = useCallback(() => {
+    if (status !== 'running') {
+      const words = generateWords();
+      if (words.length > 0) {
+        startPracticeMode(words);
       }
-    };
+    }
+  }, [status, generateWords, startPracticeMode]);
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [practiceMode, wordCount, customWords, problemWords, startPracticeMode]);
+  useKeyboardShortcut('Tab', handleTabPress, { preventDefault: true });
 
   const handleStartPractice = () => {
     const words = generateWords();
@@ -204,9 +190,9 @@ export default function PracticePage() {
         <section className="glass-subtle rounded-2xl p-4 sm:p-6">
           <h2 className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">Kata yang Akan Dilatih</h2>
           <div className="flex flex-wrap gap-2">
-            {problemWords.slice(0, 20).map((word, index) => (
+            {problemWords.slice(0, 20).map((word) => (
               <span
-                key={index}
+                key={word.word}
                 className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-xs sm:text-sm font-mono ${
                   word.severityScore > 60
                     ? 'bg-red-500/20 text-red-400'

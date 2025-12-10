@@ -234,10 +234,19 @@ export const createTestSlice: TestSliceCreator = (set, get) => ({
       testHistory: newHistory,
     });
 
-    // Update problem words
     get().updateProblemWords(state.wordResults);
 
-    // Sync to Supabase
-    syncTestSession(newHistoryItem).catch(console.error);
+    get().setSyncStatus('syncing');
+    syncTestSession(newHistoryItem)
+      .then((success) => {
+        if (success) {
+          get().setSyncStatus('success');
+        } else {
+          get().setSyncStatus('error', 'Gagal menyimpan hasil test');
+        }
+      })
+      .catch(() => {
+        get().setSyncStatus('error', 'Gagal menyimpan hasil test');
+      });
   },
 });

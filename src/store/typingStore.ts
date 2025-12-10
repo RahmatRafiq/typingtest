@@ -7,12 +7,12 @@ import {
   createSettingsSlice,
   createPracticeSlice,
   createDataSlice,
+  createSyncSlice,
 } from './slices';
 
 export const useTypingStore = create<TypingState>()(
   persist(
     (set, get) => ({
-      // Initial state
       testMode: 'time',
       handMode: 'both',
       duration: 30,
@@ -34,12 +34,12 @@ export const useTypingStore = create<TypingState>()(
       wpmHistory: [],
       isPractice: false,
 
-      // Spread slices
       ...createSettingsSlice(set, get),
       ...createInputSlice(set, get),
       ...createTestSlice(set, get),
       ...createPracticeSlice(set, get),
       ...createDataSlice(set, get),
+      ...createSyncSlice(set, get),
     }),
     {
       name: 'typing-test-storage',

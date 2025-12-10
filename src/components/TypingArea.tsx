@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import { useFocus } from '@/context/FocusContext';
+import { calculateWpm, calculateAccuracy, countCorrectChars } from '@/lib/calculations';
 
 export default function TypingArea() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -20,11 +21,13 @@ export default function TypingArea() {
     timeRemaining,
     testMode,
     startTime,
+    currentWordKeystrokes,
     handleKeyPress,
     handleBackspace,
     handleSpace,
     startTest,
     tick,
+    resetTest,
   } = useTypingStore();
 
   // Focus mode: sembunyikan header saat typing
@@ -72,7 +75,7 @@ export default function TypingArea() {
 
       if (e.key === 'Tab') {
         e.preventDefault();
-        useTypingStore.getState().resetTest();
+        resetTest();
         return;
       }
 
@@ -93,7 +96,7 @@ export default function TypingArea() {
         handleKeyPress(e.key);
       }
     },
-    [status, handleKeyPress, handleBackspace, handleSpace]
+    [status, handleKeyPress, handleBackspace, handleSpace, resetTest]
   );
 
   const handleContainerClick = useCallback(() => {
@@ -119,48 +122,18 @@ export default function TypingArea() {
     }
   }, [status]);
 
-  const calculateLiveWpm = useCallback(() => {
-    if (wordResults.length === 0 || !useTypingStore.getState().startTime) return 0;
-    const elapsedTimeInMinutes = (Date.now() - useTypingStore.getState().startTime!) / 1000 / 60;
-    if (elapsedTimeInMinutes === 0) return 0;
+  const liveWpm = useMemo(() => {
+    if (wordResults.length === 0 || !startTime) return 0;
+    const elapsedTimeInMinutes = (Date.now() - startTime) / 1000 / 60;
+    if (elapsedTimeInMinutes <= 0) return 0;
 
-    let correctChars = 0;
-
-    // Count fully correct words characters
-    wordResults.forEach((w) => {
-      if (w.correct) {
-        correctChars += w.expected.length;
-        // Add space for correct words (except last one logic is handled in final calc but for live we can approximate)
-        // Actually, let's keep it simple: correct chars in correct words + correct spaces
-        correctChars++; // Assuming space after correct word is correct
-      } else {
-        // For incorrect words, we can still count correct characters if we want strictly "correct chars" metric
-        // But usually live WPM on Monkeytype is based on correct WORDs or correct CHARS depending on setting.
-        // Standard Monkeytype WPM counts correct chars.
-        const expectedChars = w.expected.split('');
-        const typedChars = w.typed.split('');
-        expectedChars.forEach((char, charIndex) => {
-          if (typedChars[charIndex] === char) correctChars++;
-        });
-      }
-    });
-
-    // Add current correct characters in the word being typed
     const currentWord = words[currentWordIndex];
-    if (currentWord && currentInput) {
-      const expectedChars = currentWord.split('');
-      const typedChars = currentInput.split('');
-      expectedChars.forEach((char, charIndex) => {
-        if (typedChars[charIndex] === char) correctChars++;
-      });
-    }
+    const correctChars = countCorrectChars(wordResults, currentWord, currentInput);
 
-    // Adjust for space overflow if needed, but simple sum is good for live
-    return Math.round((correctChars / 5) / elapsedTimeInMinutes);
-  }, [wordResults, currentInput, currentWordIndex, words]);
+    return calculateWpm(correctChars, elapsedTimeInMinutes);
+  }, [wordResults, currentInput, currentWordIndex, words, startTime]);
 
-  const calculateLiveAccuracy = useCallback(() => {
-    // Collect all keystrokes from previous words
+  const liveAccuracy = useMemo(() => {
     const completedKeystrokes = wordResults.reduce(
       (sum, w) => sum + w.keystrokes.length,
       0
@@ -170,17 +143,11 @@ export default function TypingArea() {
       0
     );
 
-    // Add current word keystrokes from state (need to track them or approximate)
-    // Since we don't strictly track currentWordKeystrokes in a way that is exposed easily in this component without subscribe,
-    // we can rely on completed words for stability or try to infer.
-    // However, `useTypingStore` exposes `currentWordKeystrokes`.
-    const currentKeystrokes = useTypingStore.getState().currentWordKeystrokes;
-    const currentTotal = completedKeystrokes + currentKeystrokes.length;
-    const currentCorrect = completedCorrectKeystrokes + currentKeystrokes.filter(k => k.correct).length;
+    const currentTotal = completedKeystrokes + currentWordKeystrokes.length;
+    const currentCorrect = completedCorrectKeystrokes + currentWordKeystrokes.filter(k => k.correct).length;
 
-    if (currentTotal === 0) return 100;
-    return Math.round((currentCorrect / currentTotal) * 100);
-  }, [wordResults]);
+    return calculateAccuracy(currentCorrect, currentTotal);
+  }, [wordResults, currentWordKeystrokes]);
 
   const renderWord = useCallback(
     (word: string, index: number) => {
@@ -289,11 +256,11 @@ export default function TypingArea() {
         <div className="flex gap-4 sm:gap-8">
           <div>
             <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">WPM</span>
-            <div className="text-yellow-400 font-bold text-xl sm:text-2xl">{calculateLiveWpm()}</div>
+            <div className="text-yellow-400 font-bold text-xl sm:text-2xl">{liveWpm}</div>
           </div>
           <div>
             <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">Akurasi</span>
-            <div className="text-green-400 font-bold text-xl sm:text-2xl">{calculateLiveAccuracy()}%</div>
+            <div className="text-green-400 font-bold text-xl sm:text-2xl">{liveAccuracy}%</div>
           </div>
         </div>
         {testMode === 'time' && (

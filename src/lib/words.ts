@@ -1,7 +1,11 @@
+import { HandMode } from './constants';
+
 const LEFT_HAND_KEYS = new Set(['q', 'w', 'e', 'r', 't', 'a', 's', 'd', 'f', 'g', 'z', 'x', 'c', 'v', 'b']);
 const RIGHT_HAND_KEYS = new Set(['y', 'u', 'i', 'o', 'p', 'h', 'j', 'k', 'l', 'n', 'm']);
 
-export function getWordHand(word: string): 'left' | 'right' | 'mixed' {
+export type WordHand = 'left' | 'right' | 'mixed';
+
+export function getWordHand(word: string): WordHand {
   const chars = word.toLowerCase().split('').filter(c => /[a-z]/.test(c));
   const leftCount = chars.filter(c => LEFT_HAND_KEYS.has(c)).length;
   const rightCount = chars.filter(c => RIGHT_HAND_KEYS.has(c)).length;
@@ -280,7 +284,7 @@ export const WORDS = {
   ]
 };
 
-export function getWords(handMode: 'both' | 'left' | 'right' | 'alternating', count: number): string[] {
+export function getWords(handMode: HandMode, count: number): string[] {
   let wordPool: string[] = [];
 
   switch (handMode) {

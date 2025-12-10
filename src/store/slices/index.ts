@@ -3,3 +3,4 @@ export { createTestSlice } from './testSlice';
 export { createSettingsSlice } from './settingsSlice';
 export { createPracticeSlice } from './practiceSlice';
 export { createDataSlice } from './dataSlice';
+export { createSyncSlice } from './syncSlice';

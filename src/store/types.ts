@@ -60,7 +60,15 @@ export interface DataSlice {
   resetAllData: () => void;
 }
 
-export type TypingState = TypingStateData & SettingsSlice & InputSlice & TestSlice & PracticeSlice & DataSlice;
+export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
+
+export interface SyncSlice {
+  syncStatus: SyncStatus;
+  syncError: string | null;
+  setSyncStatus: (status: SyncStatus, error?: string) => void;
+}
+
+export type TypingState = TypingStateData & SettingsSlice & InputSlice & TestSlice & PracticeSlice & DataSlice & SyncSlice;
 
 type SetState = (partial: Partial<TypingState> | ((state: TypingState) => Partial<TypingState>)) => void;
 type GetState = () => TypingState;
@@ -70,3 +78,4 @@ export type InputSliceCreator = (set: SetState, get: GetState) => InputSlice;
 export type TestSliceCreator = (set: SetState, get: GetState) => TestSlice;
 export type PracticeSliceCreator = (set: SetState, get: GetState) => PracticeSlice;
 export type DataSliceCreator = (set: SetState, get: GetState) => DataSlice;
+export type SyncSliceCreator = (set: SetState, get: GetState) => SyncSlice;

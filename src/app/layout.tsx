@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import MainWrapper from "@/components/MainWrapper";
+import SyncIndicator from "@/components/SyncIndicator";
 import { FocusProvider } from "@/context/FocusContext";
 
 const geistSans = Geist({
@@ -93,6 +94,7 @@ export default function RootLayout({
           <MainWrapper>
             {children}
           </MainWrapper>
+          <SyncIndicator />
         </FocusProvider>
       </body>
     </html>

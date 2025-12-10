@@ -1,12 +1,17 @@
 import { supabase, getAnonymousUserId } from './supabase';
 import { TestSession, ProblemWord, WordResult } from '@/types';
 
+interface SyncResult {
+  success: boolean;
+  error?: string;
+}
+
 export async function syncTestSession(session: TestSession): Promise<boolean> {
-  if (!supabase) return false; // Supabase not configured
+  if (!supabase) return true;
 
   try {
     const userId = getAnonymousUserId();
-    if (!userId) return false;
+    if (!userId) return true;
 
     const { error } = await supabase.from('test_sessions').insert({
       id: session.id,
@@ -27,24 +32,25 @@ export async function syncTestSession(session: TestSession): Promise<boolean> {
     });
 
     if (error) {
-      console.error('Error syncing test session:', error);
+      console.error('syncTestSession error:', error.message);
       return false;
     }
 
     return true;
   } catch (err) {
-    console.error('Error syncing test session:', err);
+    console.error('syncTestSession exception:', err);
     return false;
   }
 }
 
 export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boolean> {
-  if (!supabase) return false; // Supabase not configured
+  if (!supabase) return true;
 
   try {
     const userId = getAnonymousUserId();
-    if (!userId) return false;
+    if (!userId) return true;
 
+    let hasError = false;
     for (const word of problemWords) {
       const { error } = await supabase.from('problem_words').upsert(
         {
@@ -67,13 +73,14 @@ export async function syncProblemWords(problemWords: ProblemWord[]): Promise<boo
       );
 
       if (error) {
-        console.error('Error syncing problem word:', error);
+        console.error('syncProblemWords error:', error.message);
+        hasError = true;
       }
     }
 
-    return true;
+    return !hasError;
   } catch (err) {
-    console.error('Error syncing problem words:', err);
+    console.error('syncProblemWords exception:', err);
     return false;
   }
 }
