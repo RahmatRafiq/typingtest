@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
       }),
     }));
 
-  // Data untuk chart kata benar/salah (lifetime - semua test)
+  // Data untuk chart akurasi kata (lifetime - semua test)
   const wordsChartData = [...validHistory]
     .reverse()
     .map((test, index) => ({
@@ -95,11 +95,18 @@ export default function AnalyticsPage() {
       salah: test.results.totalWords - test.results.correctWords,
       total: test.results.totalWords,
       akurasiKata: Math.round((test.results.correctWords / test.results.totalWords) * 100),
+      errorRate: Math.round(((test.results.totalWords - test.results.correctWords) / test.results.totalWords) * 100),
       date: new Date(test.timestamp).toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'short',
       }),
     }));
+
+  // Total kumulatif kata benar/salah
+  const totalCorrectWords = validHistory.reduce((sum, t) => sum + t.results.correctWords, 0);
+  const totalIncorrectWords = validHistory.reduce((sum, t) => sum + (t.results.totalWords - t.results.correctWords), 0);
+  const totalWordsTyped = totalCorrectWords + totalIncorrectWords;
+  const overallWordAccuracy = totalWordsTyped > 0 ? Math.round((totalCorrectWords / totalWordsTyped) * 100) : 0;
 
   const handModeData = [
     {
@@ -256,55 +263,96 @@ export default function AnalyticsPage() {
 
       {wordsChartData.length >= 2 && (
         <section>
-          <h2 className="text-xl font-semibold text-white mb-4">Tren Kata Benar/Salah</h2>
-          <div className="glass-card rounded-2xl p-6">
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={wordsChartData}>
-                  <defs>
-                    <linearGradient id="benarGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#4ade80" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#4ade80" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="salahGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#f87171" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#f87171" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
-                  <YAxis stroke="#9ca3af" fontSize={12} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="benar"
-                    name="Kata Benar"
-                    stroke="#4ade80"
-                    fill="url(#benarGradient)"
-                    strokeWidth={2}
-                    stackId="1"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="salah"
-                    name="Kata Salah"
-                    stroke="#f87171"
-                    fill="url(#salahGradient)"
-                    strokeWidth={2}
-                    stackId="1"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-6 mt-4 text-sm">
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-green-400"></span>
-                <span className="text-gray-400">Kata Benar</span>
+          <h2 className="text-xl font-semibold text-white mb-4">Tren Akurasi Kata</h2>
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="glass-card rounded-2xl p-6 flex-1 min-w-0">
+              <h3 className="text-lg font-medium text-white mb-4">Tren Akurasi & Error Rate</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={wordsChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9ca3af" fontSize={12} />
+                    <YAxis stroke="#9ca3af" fontSize={12} domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0]?.payload;
+                          return (
+                            <div className="glass-card rounded-lg p-3 text-sm">
+                              <p className="text-white font-medium mb-1">{data?.date || data?.name}</p>
+                              <p className="text-green-400">Kata Benar: {data?.akurasiKata}%</p>
+                              <p className="text-red-400">Kata Salah: {data?.errorRate}%</p>
+                              <p className="text-gray-400 text-xs mt-1">
+                                {data?.benar} benar / {data?.salah} salah dari {data?.total} kata
+                              </p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="akurasiKata"
+                      name="Kata Benar %"
+                      stroke="#4ade80"
+                      strokeWidth={2}
+                      dot={{ fill: '#4ade80', strokeWidth: 2, r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="errorRate"
+                      name="Kata Salah %"
+                      stroke="#f87171"
+                      strokeWidth={2}
+                      dot={{ fill: '#f87171', strokeWidth: 2, r: 3 }}
+                      activeDot={{ r: 5 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-red-400"></span>
-                <span className="text-gray-400">Kata Salah</span>
+              <p className="text-center text-gray-500 text-xs mt-3">
+                Hijau naik & Merah turun = peningkatan
+              </p>
+            </div>
+
+            <div className="glass-card rounded-2xl p-6 lg:w-72">
+              <h3 className="text-lg font-medium text-white mb-4">Total Kumulatif</h3>
+              <div className="space-y-6">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-green-400 mb-1">{overallWordAccuracy}%</div>
+                  <div className="text-gray-400 text-sm">Akurasi Keseluruhan</div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Kata Benar</span>
+                    <span className="text-green-400 font-semibold">{totalCorrectWords.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Kata Salah</span>
+                    <span className="text-red-400 font-semibold">{totalIncorrectWords.toLocaleString()}</span>
+                  </div>
+                  <div className="border-t border-white/10 pt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400 text-sm">Total Kata</span>
+                      <span className="text-white font-semibold">{totalWordsTyped.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="h-3 bg-gray-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-500 to-green-400 transition-all duration-500"
+                    style={{ width: `${overallWordAccuracy}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>0%</span>
+                  <span>100%</span>
+                </div>
               </div>
             </div>
           </div>
