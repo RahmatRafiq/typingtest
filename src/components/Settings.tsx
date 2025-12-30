@@ -35,99 +35,137 @@ export default function Settings() {
   const wordModes = [25, 50, 100];
 
   return (
-    <div className={`glass-card rounded-2xl p-4 sm:p-8 flex justify-center ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
-      <div className="flex flex-col space-y-4 sm:space-y-5 w-full sm:w-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">mode</span>
-          <div className="flex gap-2 sm:gap-3">
-            <SettingButton
-              active={testMode === 'time'}
-              onClick={() => setTestMode('time')}
-            >
-              waktu
+    <div className={`glass-card rounded-2xl p-4 sm:p-6 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+      {/* Mobile: Vertical layout */}
+      <div className="flex flex-col space-y-4 lg:hidden">
+        <div className="flex flex-col gap-2">
+          <span className="text-gray-400 text-xs uppercase tracking-wide">Mode</span>
+          <div className="flex gap-2">
+            <SettingButton active={testMode === 'time'} onClick={() => setTestMode('time')}>
+              Waktu
             </SettingButton>
-            <SettingButton
-              active={testMode === 'words'}
-              onClick={() => setTestMode('words')}
-            >
-              kata
+            <SettingButton active={testMode === 'words'} onClick={() => setTestMode('words')}>
+              Kata
             </SettingButton>
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">
-            {testMode === 'time' ? 'detik' : 'kata'}
+        <div className="flex flex-col gap-2">
+          <span className="text-gray-400 text-xs uppercase tracking-wide">
+            {testMode === 'time' ? 'Detik' : 'Kata'}
           </span>
-          <div className="flex gap-2 sm:gap-3 flex-wrap">
+          <div className="flex gap-2 flex-wrap">
             {testMode === 'time'
               ? timeModes.map((t) => (
-                  <SettingButton
-                    key={t}
-                    active={duration === t}
-                    onClick={() => setDuration(t)}
-                  >
+                  <SettingButton key={t} active={duration === t} onClick={() => setDuration(t)}>
                     {t}
                   </SettingButton>
                 ))
               : wordModes.map((w) => (
-                  <SettingButton
-                    key={w}
-                    active={duration === w}
-                    onClick={() => setDuration(w)}
-                  >
+                  <SettingButton key={w} active={duration === w} onClick={() => setDuration(w)}>
                     {w}
                   </SettingButton>
                 ))}
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-6">
-          <span className="text-gray-400 sm:w-20 text-xs sm:text-sm uppercase tracking-wide">tangan</span>
-          <div className="flex gap-2 sm:gap-3 flex-wrap">
-            <SettingButton
-              active={handMode === 'both'}
-              onClick={() => setHandMode('both')}
-              title="Kedua tangan - semua kata"
-            >
-              semua
+        <div className="flex flex-col gap-2">
+          <span className="text-gray-400 text-xs uppercase tracking-wide">Tangan</span>
+          <div className="flex gap-2 flex-wrap">
+            <SettingButton active={handMode === 'both'} onClick={() => setHandMode('both')}>
+              Semua
             </SettingButton>
-            <SettingButton
-              active={handMode === 'left'}
-              onClick={() => setHandMode('left')}
-              title="Fokus tangan kiri - kata menggunakan tombol QWERT ASDFG ZXCVB"
-            >
-              kiri
+            <SettingButton active={handMode === 'left'} onClick={() => setHandMode('left')}>
+              Kiri
             </SettingButton>
-            <SettingButton
-              active={handMode === 'right'}
-              onClick={() => setHandMode('right')}
-              title="Fokus tangan kanan - kata menggunakan tombol YUIOP HJKL NM"
-            >
-              kanan
+            <SettingButton active={handMode === 'right'} onClick={() => setHandMode('right')}>
+              Kanan
             </SettingButton>
-            <SettingButton
-              active={handMode === 'alternating'}
-              onClick={() => setHandMode('alternating')}
-              title="Bergantian - bergantian antara kata tangan kiri dan kanan"
-            >
-              bergantian
+            <SettingButton active={handMode === 'alternating'} onClick={() => setHandMode('alternating')}>
+              Bergantian
             </SettingButton>
           </div>
         </div>
 
         {handMode !== 'both' && (
-          <div className="text-xs text-gray-500 sm:pl-[6.5rem]">
-            {handMode === 'left' && (
-              <span>Fokus pada tombol: Q W E R T | A S D F G | Z X C V B</span>
-            )}
-            {handMode === 'right' && (
-              <span>Fokus pada tombol: Y U I O P | H J K L | N M</span>
-            )}
-            {handMode === 'alternating' && (
-              <span>Kata bergantian antara dominan tangan kiri dan tangan kanan</span>
-            )}
+          <div className="text-xs text-gray-500 pt-2 border-t border-white/5">
+            {handMode === 'left' && <span>Q W E R T | A S D F G | Z X C V B</span>}
+            {handMode === 'right' && <span>Y U I O P | H J K L | N M</span>}
+            {handMode === 'alternating' && <span>Bergantian kiri & kanan</span>}
           </div>
+        )}
+      </div>
+
+      {/* Desktop: Single horizontal row */}
+      <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-8">
+        {/* Mode */}
+        <div className="flex items-center gap-3">
+          <span className="text-gray-400 text-sm uppercase tracking-wide font-medium">Mode</span>
+          <div className="flex gap-2">
+            <SettingButton active={testMode === 'time'} onClick={() => setTestMode('time')}>
+              Waktu
+            </SettingButton>
+            <SettingButton active={testMode === 'words'} onClick={() => setTestMode('words')}>
+              Kata
+            </SettingButton>
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="h-8 w-px bg-white/10"></div>
+
+        {/* Duration */}
+        <div className="flex items-center gap-3">
+          <span className="text-gray-400 text-sm uppercase tracking-wide font-medium">
+            {testMode === 'time' ? 'Detik' : 'Kata'}
+          </span>
+          <div className="flex gap-2">
+            {testMode === 'time'
+              ? timeModes.map((t) => (
+                  <SettingButton key={t} active={duration === t} onClick={() => setDuration(t)}>
+                    {t}
+                  </SettingButton>
+                ))
+              : wordModes.map((w) => (
+                  <SettingButton key={w} active={duration === w} onClick={() => setDuration(w)}>
+                    {w}
+                  </SettingButton>
+                ))}
+          </div>
+        </div>
+
+        {/* Separator */}
+        <div className="h-8 w-px bg-white/10"></div>
+
+        {/* Hand Mode */}
+        <div className="flex items-center gap-3">
+          <span className="text-gray-400 text-sm uppercase tracking-wide font-medium">Tangan</span>
+          <div className="flex gap-2">
+            <SettingButton active={handMode === 'both'} onClick={() => setHandMode('both')}>
+              Semua
+            </SettingButton>
+            <SettingButton active={handMode === 'left'} onClick={() => setHandMode('left')}>
+              Kiri
+            </SettingButton>
+            <SettingButton active={handMode === 'right'} onClick={() => setHandMode('right')}>
+              Kanan
+            </SettingButton>
+            <SettingButton active={handMode === 'alternating'} onClick={() => setHandMode('alternating')}>
+              Bergantian
+            </SettingButton>
+          </div>
+        </div>
+
+        {/* Hand mode hint */}
+        {handMode !== 'both' && (
+          <>
+            <div className="h-8 w-px bg-white/10"></div>
+            <div className="text-xs text-gray-500">
+              {handMode === 'left' && <span>Q W E R T | A S D F G | Z X C V B</span>}
+              {handMode === 'right' && <span>Y U I O P | H J K L | N M</span>}
+              {handMode === 'alternating' && <span>Bergantian kiri & kanan</span>}
+            </div>
+          </>
         )}
       </div>
     </div>

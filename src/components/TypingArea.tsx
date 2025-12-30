@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import { useFocus } from '@/context/FocusContext';
@@ -11,6 +11,7 @@ export default function TypingArea() {
   const prevStatusRef = useRef<string>('idle');
   const router = useRouter();
   const { setFocusMode } = useFocus();
+  const [capsLockOn, setCapsLockOn] = useState(false);
 
   const {
     status,
@@ -71,6 +72,9 @@ export default function TypingArea() {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
+      // Always check caps lock status on any key press
+      setCapsLockOn(e.getModifierState('CapsLock'));
+
       if (status !== 'running') return;
 
       if (e.key === 'Tab') {
@@ -214,6 +218,7 @@ export default function TypingArea() {
         tabIndex={0}
         onClick={handleContainerClick}
         onKeyDown={(e) => {
+          setCapsLockOn(e.getModifierState('CapsLock'));
           if (e.key !== 'Tab') {
             e.preventDefault();
             startTest();
@@ -223,13 +228,13 @@ export default function TypingArea() {
       >
         <div className="text-center px-4">
           <p className="text-gray-300 text-base sm:text-xl mb-2 sm:mb-3 group-hover:text-white transition-colors">
-            Klik di sini atau tekan tombol apa saja untuk mulai
+            Klik di sini atau tekan Spasi untuk mulai
           </p>
           <p className="text-gray-500 text-xs sm:text-sm">
             Tekan Tab untuk restart kapan saja
           </p>
           <div className="mt-4 sm:mt-6 hidden sm:flex gap-4 justify-center text-gray-500 text-xs">
-            <span className="px-3 py-1.5 glass rounded-lg">Spasi = lanjut</span>
+            <span className="px-3 py-1.5 glass rounded-lg">Spasi = mulai/lanjut</span>
             <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
             <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
           </div>
@@ -252,6 +257,21 @@ export default function TypingArea() {
       onMouseDown={handleMouseDown}
       className="relative focus:outline-none select-none"
     >
+      {/* Caps Lock Warning - Fixed position overlay */}
+      {capsLockOn && (
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] animate-pulse pointer-events-none">
+          <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-yellow-500/30 border-2 border-yellow-400 backdrop-blur-md shadow-2xl">
+            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+            </svg>
+            <span className="text-yellow-400 text-base font-bold uppercase tracking-wider">Caps Lock Aktif!</span>
+            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+            </svg>
+          </div>
+        </div>
+      )}
+
       <div className="glass-card rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
         <div className="flex gap-4 sm:gap-8">
           <div>
@@ -263,20 +283,22 @@ export default function TypingArea() {
             <div className="text-green-400 font-bold text-xl sm:text-2xl">{liveAccuracy}%</div>
           </div>
         </div>
-        {testMode === 'time' && (
-          <div className="text-2xl sm:text-4xl font-bold text-yellow-400">
-            {timeRemaining}
-          </div>
-        )}
-        {testMode === 'words' && (
-          <div className="text-sm sm:text-lg text-gray-400">
-            <span className="text-white font-bold">{currentWordIndex}</span> / {words.length}
-          </div>
-        )}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {testMode === 'time' && (
+            <div className="text-2xl sm:text-4xl font-bold text-yellow-400">
+              {timeRemaining}
+            </div>
+          )}
+          {testMode === 'words' && (
+            <div className="text-sm sm:text-lg text-gray-400">
+              <span className="text-white font-bold">{currentWordIndex}</span> / {words.length}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="hidden sm:flex gap-3 mb-4 text-xs text-gray-500">
-        <span className="px-3 py-1.5 glass rounded-lg">Spasi = lanjut</span>
+        <span className="px-3 py-1.5 glass rounded-lg">Spasi = mulai/lanjut</span>
         <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
         <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
       </div>

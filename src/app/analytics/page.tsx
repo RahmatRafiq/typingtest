@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
+import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
 import Link from 'next/link';
 import {
   LineChart,
@@ -37,6 +39,7 @@ const CustomTooltip = ({ active, payload, label }: ChartTooltipProps) => {
 };
 
 export default function AnalyticsPage() {
+  const router = useRouter();
   const { testHistory, problemWords, resetAllData } = useTypingStore();
 
   // Filter out practice sessions for analytics
@@ -45,6 +48,19 @@ export default function AnalyticsPage() {
   const [showResetModal, setShowResetModal] = useState(false);
   const [confirmText, setConfirmText] = useState('');
   const CONFIRM_WORD = 'HAPUS';
+
+  // Keyboard shortcut to go back to test
+  useKeyboardShortcut('Enter', () => {
+    if (!showResetModal) {
+      router.push('/');
+    }
+  });
+
+  useKeyboardShortcut(' ', () => {
+    if (!showResetModal) {
+      router.push('/');
+    }
+  });
 
   const totalTests = validHistory.length;
   const avgWpm = totalTests > 0
@@ -153,9 +169,14 @@ export default function AnalyticsPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white mb-2">Dashboard Analitik</h1>
-        <p className="text-gray-400">Lacak progres mengetikmu dan identifikasi area yang perlu diperbaiki</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">Dashboard Analitik</h1>
+          <p className="text-gray-400">Lacak progres mengetikmu dan identifikasi area yang perlu diperbaiki</p>
+        </div>
+        <div className="hidden sm:flex gap-2 text-xs text-gray-500 shrink-0">
+          <span className="px-3 py-1.5 glass rounded-lg">Enter/Spasi = kembali ke test</span>
+        </div>
       </div>
 
       <section>

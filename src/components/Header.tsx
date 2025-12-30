@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
-import { useFocus } from '@/context/FocusContext';
 
 export default function Header() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const { isFocusMode } = useFocus();
   const scrolledRef = useRef(false);
 
   useEffect(() => {
@@ -39,12 +37,12 @@ export default function Header() {
   ];
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-300 ${
+    <header className={`sticky top-0 z-[100] pointer-events-auto transition-all duration-300 ${
       scrolled
         ? 'glass-header'
         : 'bg-transparent'
-    } ${isFocusMode ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-3 sm:py-4">
+    }`}>
+      <div className="pl-4 sm:pl-6 lg:pl-8 pr-4 py-3 sm:py-4">
         <div className="flex items-center justify-between gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
