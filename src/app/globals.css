@@ -2,18 +2,23 @@
 
 :root {
   /* Sketch Theme - Notebook Doodles */
+  /* Background colors */
   --paper: #f5f1e8;
   --paper-dark: #e8e4db;
-  --paper-line: #d4cfc4;
-  --pencil: #3d3d3d;
-  --pencil-light: #6b6b6b;
-  --ink-blue: #2c5aa0;
-  --ink-blue-light: #4a7dc4;
-  --pencil-red: #c94a4a;
-  --pencil-green: #3d7a47;
-  --pencil-yellow: #d4a020;
-  --pencil-orange: #c97a3a;
-  --pencil-purple: #7a4a9e;
+  --paper-line: #c9c4b8;
+
+  /* Text colors - optimized for contrast on cream background */
+  --pencil: #2d2d2d;           /* Main text: contrast 11:1 */
+  --pencil-light: #4a4a4a;     /* Secondary text: contrast 7:1 */
+
+  /* Accent colors - darkened for readability */
+  --ink-blue: #1e4a8a;         /* Primary accent: contrast 7:1 */
+  --ink-blue-light: #3a6ab0;
+  --pencil-red: #a63030;       /* Error/wrong: contrast 5.5:1 */
+  --pencil-green: #2a5e32;     /* Success/correct: contrast 6.5:1 */
+  --pencil-yellow: #8a6b10;    /* Warning/highlight: contrast 5:1 */
+  --pencil-orange: #9e5a20;    /* Accent: contrast 5:1 */
+  --pencil-purple: #5a3080;    /* Accent: contrast 7:1 */
 
   --background: var(--paper);
   --foreground: var(--pencil);
@@ -109,7 +114,7 @@ body {
   left: -2px;
   right: -2px;
   height: 3px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0 3 Q 10 1, 20 3 T 40 3 T 60 3 T 80 3 T 100 3' stroke='%232c5aa0' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0 3 Q 10 1, 20 3 T 40 3 T 60 3 T 80 3 T 100 3' stroke='%231e4a8a' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-x;
   background-size: 50px 6px;
 }
 
@@ -166,7 +171,7 @@ body {
   display: inline-block;
   width: 20px;
   height: 20px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 L14 8 L20 9 L15 14 L17 21 L12 17 L7 21 L9 14 L4 9 L10 8 Z' stroke='%23d4a020' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 L14 8 L20 9 L15 14 L17 21 L12 17 L7 21 L9 14 L4 9 L10 8 Z' stroke='%238a6b10' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
   background-size: contain;
 }
 
@@ -174,7 +179,7 @@ body {
   display: inline-block;
   width: 30px;
   height: 20px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20'%3E%3Cpath d='M2 10 Q 10 8, 20 10 T 35 10 M30 5 L38 10 L30 15' stroke='%232c5aa0' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20'%3E%3Cpath d='M2 10 Q 10 8, 20 10 T 35 10 M30 5 L38 10 L30 15' stroke='%231e4a8a' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
   background-size: contain;
 }
 
@@ -182,7 +187,7 @@ body {
   display: inline-block;
   width: 24px;
   height: 24px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10' ry='9' stroke='%23c94a4a' stroke-width='2' fill='none' transform='rotate(-5 12 12)'/%3E%3C/svg%3E") no-repeat center;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10' ry='9' stroke='%23a63030' stroke-width='2' fill='none' transform='rotate(-5 12 12)'/%3E%3C/svg%3E") no-repeat center;
   background-size: contain;
 }
 
@@ -190,7 +195,7 @@ body {
   display: inline-block;
   width: 20px;
   height: 20px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12 L10 18 L20 6' stroke='%233d7a47' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12 L10 18 L20 6' stroke='%232a5e32' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
   background-size: contain;
 }
 
@@ -206,7 +211,7 @@ body {
   top: 0;
   bottom: 0;
   width: 30px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cellipse cx='15' cy='20' rx='12' ry='8' stroke='%236b6b6b' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-y;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cellipse cx='15' cy='20' rx='12' ry='8' stroke='%234a4a4a' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-y;
   background-size: 30px 40px;
   pointer-events: none;
 }
@@ -471,7 +476,7 @@ th {
   left: 10%;
   right: 10%;
   height: 10px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0 8 Q 25 2, 50 8 T 100 8' stroke='%233d3d3d' stroke-width='1' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0 8 Q 25 2, 50 8 T 100 8' stroke='%232d2d2d' stroke-width='1' fill='none'/%3E%3C/svg%3E") repeat-x;
   background-size: 50px 10px;
 }
 
@@ -490,7 +495,7 @@ a:hover {
 .sketch-divider {
   border: none;
   height: 2px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 4'%3E%3Cpath d='M0 2 Q 10 0, 20 2 T 40 2 T 60 2 T 80 2 T 100 2' stroke='%236b6b6b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 4'%3E%3Cpath d='M0 2 Q 10 0, 20 2 T 40 2 T 60 2 T 80 2 T 100 2' stroke='%234a4a4a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x;
   background-size: 50px 4px;
   margin: 1rem 0;
 }
