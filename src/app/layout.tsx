@@ -1,19 +1,30 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Caveat, Patrick_Hand, Special_Elite } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import MainWrapper from "@/components/MainWrapper";
 import SyncIndicator from "@/components/SyncIndicator";
 import { FocusProvider } from "@/context/FocusContext";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Handwritten style font for headings and UI
+const caveat = Caveat({
+  variable: "--font-sketch",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+// Secondary handwritten font
+const patrickHand = Patrick_Hand({
+  variable: "--font-sketch-alt",
   subsets: ["latin"],
+  weight: "400",
+});
+
+// Typewriter style for typing area
+const specialElite = Special_Elite({
+  variable: "--font-sketch-mono",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://typingtest-olive.vercel.app";
@@ -21,10 +32,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://typingtest-olive.ve
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "TypeMaster - Advanced Typing Test with Deep Analytics",
+    default: "TypeMaster - Latihan Mengetik",
     template: "%s | TypeMaster"
   },
-  description: "Master typing with personalized training. Track weak words, analyze progress, and practice with targeted drills. Features hand modes and analytics.",
+  description: "Latihan mengetik dengan gaya notebook. Lacak kemajuan, analisis kelemahan, dan tingkatkan kecepatan mengetik.",
   alternates: {
     canonical: "/",
   },
@@ -44,11 +55,11 @@ export const metadata: Metadata = {
   creator: "TypeMaster",
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "id_ID",
     url: siteUrl,
     siteName: "TypeMaster",
-    title: "TypeMaster - Advanced Typing Test with Deep Analytics",
-    description: "Master your typing skills with personalized training. Identify weak words and practice with targeted drills.",
+    title: "TypeMaster - Latihan Mengetik",
+    description: "Latihan mengetik dengan gaya notebook. Lacak kemajuan dan tingkatkan kecepatan.",
     images: [
       {
         url: "/og-image.png",
@@ -60,8 +71,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "TypeMaster - Advanced Typing Test",
-    description: "Master your typing skills with personalized training and deep analytics.",
+    title: "TypeMaster - Latihan Mengetik",
+    description: "Latihan mengetik dengan gaya notebook dan analitik mendalam.",
   },
   robots: {
     index: true,
@@ -85,9 +96,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="id">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white min-h-screen`}
+        className={`${caveat.variable} ${patrickHand.variable} ${specialElite.variable} antialiased min-h-screen`}
       >
         <FocusProvider>
           <Header />
