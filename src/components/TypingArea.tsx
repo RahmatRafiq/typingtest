@@ -374,7 +374,7 @@ export default function TypingArea() {
         {/* Notebook margin line */}
         <div
           className="absolute left-12 top-0 bottom-0 w-0.5 opacity-30"
-          style={{ backgroundColor: '#e8a0a0' }}
+          style={{ backgroundColor: '#c08080' }}
         />
 
         <div className="flex flex-wrap leading-relaxed pl-6">

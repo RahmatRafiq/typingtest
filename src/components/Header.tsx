@@ -116,7 +116,7 @@ export default function Header() {
                   <span
                     className="absolute bottom-0 left-1 right-1 h-1"
                     style={{
-                      background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0 3 Q 15 1, 30 4 T 60 2 T 100 4' stroke='%231e4a8a' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat`,
+                      background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0 3 Q 15 1, 30 4 T 60 2 T 100 4' stroke='%231a4080' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat`,
                       backgroundSize: '100% 100%',
                     }}
                   />
@@ -126,7 +126,7 @@ export default function Header() {
                   <span
                     className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity -z-10"
                     style={{
-                      background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40'%3E%3Cellipse cx='50' cy='20' rx='48' ry='18' stroke='%234a4a4a' stroke-width='1.5' fill='none' stroke-dasharray='4 3'/%3E%3C/svg%3E") no-repeat center`,
+                      background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 40'%3E%3Cellipse cx='50' cy='20' rx='48' ry='18' stroke='%233d3d3d' stroke-width='1.5' fill='none' stroke-dasharray='4 3'/%3E%3C/svg%3E") no-repeat center`,
                       backgroundSize: '100% 100%',
                     }}
                   />
@@ -147,7 +147,7 @@ export default function Header() {
       <div
         className="h-0.5 w-full"
         style={{
-          background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 4'%3E%3Cpath d='M0 2 Q 20 0, 40 2 T 80 2 T 120 2 T 160 2 T 200 2' stroke='%232d2d2d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x`,
+          background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 4'%3E%3Cpath d='M0 2 Q 20 0, 40 2 T 80 2 T 120 2 T 160 2 T 200 2' stroke='%231a1a1a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x`,
           backgroundSize: '200px 4px',
         }}
       />

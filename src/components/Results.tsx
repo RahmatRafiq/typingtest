@@ -211,35 +211,35 @@ export default function Results() {
               <AreaChart data={wordPerformance}>
                 <defs>
                   <linearGradient id="wpmGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#1e4a8a" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#1e4a8a" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#1a4080" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#1a4080" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="accGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#2a5e32" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="#2a5e32" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#1e5028" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#1e5028" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="4 4" stroke="#c9c4b8" />
+                <CartesianGrid strokeDasharray="4 4" stroke="#a89880" />
                 <XAxis
                   dataKey="kata"
-                  stroke="#4a4a4a"
+                  stroke="#3d3d3d"
                   fontSize={12}
                   fontFamily="var(--font-sketch)"
-                  label={{ value: 'Kata ke-', position: 'insideBottom', offset: -5, fill: '#4a4a4a' }}
+                  label={{ value: 'Kata ke-', position: 'insideBottom', offset: -5, fill: '#3d3d3d' }}
                 />
-                <YAxis stroke="#4a4a4a" fontSize={12} fontFamily="var(--font-sketch)" />
+                <YAxis stroke="#3d3d3d" fontSize={12} fontFamily="var(--font-sketch)" />
                 <Tooltip content={<CustomTooltip />} />
                 <ReferenceLine
                   y={avgWpmLine}
-                  stroke="#1e4a8a"
+                  stroke="#1a4080"
                   strokeDasharray="5 5"
-                  label={{ value: `Rata-rata: ${avgWpmLine}`, fill: '#1e4a8a', fontSize: 12, fontFamily: 'var(--font-sketch)' }}
+                  label={{ value: `Rata-rata: ${avgWpmLine}`, fill: '#1a4080', fontSize: 12, fontFamily: 'var(--font-sketch)' }}
                 />
                 <Area
                   type="monotone"
                   dataKey="wpm"
                   name="WPM"
-                  stroke="#1e4a8a"
+                  stroke="#1a4080"
                   fill="url(#wpmGradient)"
                   strokeWidth={2}
                 />
@@ -247,7 +247,7 @@ export default function Results() {
                   type="monotone"
                   dataKey="akurasi"
                   name="Akurasi"
-                  stroke="#2a5e32"
+                  stroke="#1e5028"
                   fill="url(#accGradient)"
                   strokeWidth={2}
                 />

@@ -139,7 +139,7 @@ export default function Settings() {
         <div
           className="h-8 w-0.5"
           style={{
-            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%234a4a4a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
+            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%233d3d3d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
             backgroundSize: '2px 100%',
           }}
         />
@@ -171,7 +171,7 @@ export default function Settings() {
         <div
           className="h-8 w-0.5"
           style={{
-            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%234a4a4a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
+            background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%233d3d3d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
             backgroundSize: '2px 100%',
           }}
         />
@@ -206,7 +206,7 @@ export default function Settings() {
             <div
               className="h-8 w-0.5"
               style={{
-                background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%234a4a4a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
+                background: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 30'%3E%3Cpath d='M1 0 Q 0 5, 1 10 T 1 20 T 1 30' stroke='%233d3d3d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat`,
                 backgroundSize: '2px 100%',
               }}
             />
