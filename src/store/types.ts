@@ -30,12 +30,17 @@ export interface TypingStateData {
   testHistory: TestSession[];
   wpmHistory: number[];
   isPractice: boolean;
+  // Sound settings
+  soundEnabled: boolean;
+  soundVolume: number;
 }
 
 export interface SettingsSlice {
   setTestMode: (mode: TestMode) => void;
   setHandMode: (mode: HandMode) => void;
   setDuration: (duration: number) => void;
+  setSoundEnabled: (enabled: boolean) => void;
+  setSoundVolume: (volume: number) => void;
 }
 
 export interface InputSlice {

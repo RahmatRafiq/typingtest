@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import { useFocus } from '@/context/FocusContext';
 import { calculateWpm, calculateAccuracy, countCorrectChars } from '@/lib/calculations';
+import { playKeystroke, playSpaceSound, playBackspaceSound, initAudio, setEnabled, setVolume } from '@/lib/typeSound';
 
 export default function TypingArea() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,15 @@ export default function TypingArea() {
     startTest,
     tick,
     resetTest,
+    soundEnabled,
+    soundVolume,
   } = useTypingStore();
+
+  // Sync sound settings with utility
+  useEffect(() => {
+    setEnabled(soundEnabled);
+    setVolume(soundVolume);
+  }, [soundEnabled, soundVolume]);
 
   useEffect(() => {
     if (status === 'running') {
@@ -79,25 +88,33 @@ export default function TypingArea() {
 
       if (e.key === 'Backspace') {
         e.preventDefault();
+        playBackspaceSound();
         handleBackspace();
         return;
       }
 
       if (e.key === ' ') {
         e.preventDefault();
+        playSpaceSound();
         handleSpace();
         return;
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
+        // Determine if keystroke is correct before playing sound
+        const currentWord = words[currentWordIndex];
+        const expectedChar = currentWord?.[currentInput.length];
+        const isCorrect = e.key === expectedChar;
+        playKeystroke(isCorrect);
         handleKeyPress(e.key);
       }
     },
-    [status, handleKeyPress, handleBackspace, handleSpace, resetTest]
+    [status, handleKeyPress, handleBackspace, handleSpace, resetTest, words, currentWordIndex, currentInput]
   );
 
   const handleContainerClick = useCallback(() => {
+    initAudio(); // Initialize audio context on user interaction
     if (status === 'idle') {
       startTest();
     }
