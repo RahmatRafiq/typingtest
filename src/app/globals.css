@@ -574,3 +574,279 @@ a:hover {
   background: var(--pencil-red);
   animation: strike 0.3s ease-out forwards;
 }
+
+/* ======================================
+   GLASS CLASSES - Sketch Theme Compatible
+   ====================================== */
+
+/* Glass card - sketch version */
+.glass-card {
+  background: var(--paper-dark);
+  border: 2px solid var(--pencil);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--pencil-light);
+}
+
+/* Glass card subtle */
+.glass-subtle {
+  background: var(--paper);
+  border: 2px dashed var(--pencil-light);
+  border-radius: 8px;
+}
+
+/* Glass button */
+.glass-button {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+  border-color: var(--pencil);
+  box-shadow: 2px 2px 0 var(--pencil-light);
+}
+
+/* Glass input */
+.glass-input {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+}
+
+.glass-input:focus {
+  border-color: var(--ink-blue);
+  box-shadow: 0 0 0 2px var(--ink-blue-light);
+}
+
+/* Glass plain */
+.glass {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+}
+
+/* Override Tailwind text colors for sketch theme */
+.text-white {
+  color: var(--pencil) !important;
+}
+
+.text-gray-400 {
+  color: var(--pencil-light) !important;
+}
+
+.text-gray-300 {
+  color: var(--pencil) !important;
+}
+
+.text-gray-500 {
+  color: var(--pencil-light) !important;
+}
+
+.text-gray-200 {
+  color: var(--pencil) !important;
+}
+
+/* Override accent colors */
+.text-yellow-400 {
+  color: var(--pencil-yellow) !important;
+}
+
+.text-green-400 {
+  color: var(--pencil-green) !important;
+}
+
+.text-blue-400 {
+  color: var(--ink-blue) !important;
+}
+
+.text-purple-400 {
+  color: var(--pencil-purple) !important;
+}
+
+.text-red-400 {
+  color: var(--pencil-red) !important;
+}
+
+.text-orange-400 {
+  color: var(--pencil-orange) !important;
+}
+
+/* Background overrides for badges */
+.bg-yellow-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 20%, transparent) !important;
+}
+
+.bg-green-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-green) 20%, transparent) !important;
+}
+
+.bg-red-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+.bg-blue-500\/20 {
+  background-color: color-mix(in srgb, var(--ink-blue) 20%, transparent) !important;
+}
+
+.bg-purple-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-purple) 20%, transparent) !important;
+}
+
+.bg-orange-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-orange) 20%, transparent) !important;
+}
+
+.bg-gray-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-light) 20%, transparent) !important;
+}
+
+/* Yellow button overrides */
+.bg-yellow-400 {
+  background-color: var(--pencil-yellow) !important;
+  color: var(--paper) !important;
+}
+
+.bg-yellow-400:hover,
+.hover\:bg-yellow-300:hover {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 85%, white) !important;
+}
+
+/* Chart grid and axis colors */
+.recharts-cartesian-grid line {
+  stroke: var(--paper-line) !important;
+}
+
+.recharts-xAxis line,
+.recharts-yAxis line,
+.recharts-xAxis .recharts-cartesian-axis-tick-value,
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+  stroke: var(--pencil-light) !important;
+  fill: var(--pencil-light) !important;
+}
+
+/* Table border overrides */
+.border-white\/5 {
+  border-color: var(--paper-line) !important;
+}
+
+.border-white\/10 {
+  border-color: var(--paper-line) !important;
+}
+
+/* Hover background */
+.hover\:bg-white\/5:hover {
+  background-color: var(--paper-dark) !important;
+}
+
+/* Progress bar background */
+.bg-gray-800 {
+  background-color: var(--paper-line) !important;
+}
+
+/* Gradient text fix */
+.from-green-500 {
+  --tw-gradient-from: var(--pencil-green) !important;
+}
+
+.to-green-400 {
+  --tw-gradient-to: var(--pencil-green) !important;
+}
+
+/* Icon background overrides */
+.bg-yellow-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 25%, transparent) !important;
+}
+
+.bg-green-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-green) 25%, transparent) !important;
+}
+
+.bg-blue-400\/20 {
+  background-color: color-mix(in srgb, var(--ink-blue) 25%, transparent) !important;
+}
+
+.bg-red-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 25%, transparent) !important;
+}
+
+/* More text color overrides */
+.text-gray-700 {
+  color: var(--pencil) !important;
+}
+
+.text-gray-900 {
+  color: var(--pencil) !important;
+}
+
+/* Border color overrides */
+.border-gray-700 {
+  border-color: var(--pencil-light) !important;
+}
+
+.border-red-500\/20 {
+  border-color: color-mix(in srgb, var(--pencil-red) 30%, transparent) !important;
+}
+
+.border-red-500\/30 {
+  border-color: color-mix(in srgb, var(--pencil-red) 40%, transparent) !important;
+}
+
+.border-yellow-500\/30 {
+  border-color: color-mix(in srgb, var(--pencil-yellow) 40%, transparent) !important;
+}
+
+/* Background solid overrides */
+.bg-black\/50 {
+  background-color: color-mix(in srgb, var(--pencil) 30%, var(--paper)) !important;
+}
+
+.bg-black\/70 {
+  background-color: color-mix(in srgb, var(--pencil) 50%, var(--paper)) !important;
+}
+
+/* Red button background */
+.bg-red-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+.bg-red-500\/10 {
+  background-color: color-mix(in srgb, var(--pencil-red) 15%, transparent) !important;
+}
+
+.bg-red-600 {
+  background-color: var(--pencil-red) !important;
+}
+
+.hover\:bg-red-500\/30:hover {
+  background-color: color-mix(in srgb, var(--pencil-red) 30%, transparent) !important;
+}
+
+.hover\:bg-red-700:hover {
+  background-color: color-mix(in srgb, var(--pencil-red) 90%, black) !important;
+}
+
+/* Focus ring */
+.focus\:border-red-500:focus {
+  border-color: var(--pencil-red) !important;
+}
+
+.focus\:ring-red-500\/20:focus {
+  --tw-ring-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+/* Placeholder text */
+.placeholder-gray-600::placeholder {
+  color: var(--pencil-light) !important;
+}
+
+/* Modal background blur styling */
+.backdrop-blur-2xl {
+  background-color: var(--paper) !important;
+  border: 2px solid var(--pencil) !important;
+}
+
+/* Hover states for gray buttons */
+.hover\:bg-gray-700:hover {
+  background-color: var(--paper-dark) !important;
+}
