@@ -40,30 +40,29 @@ export const createInputSlice: InputSliceCreator = (set, get) => ({
       lastKeystrokeTime: now,
     });
 
-    // Auto-complete untuk mode words: selesaikan jika ini huruf terakhir dari kata terakhir
-    if (state.testMode === 'words') {
-      const isLastWord = state.currentWordIndex === state.duration - 1;
-      const isWordComplete = newInput === currentWord;
+    // Auto-complete: selesaikan jika ini huruf terakhir dari kata terakhir
+    // Berlaku untuk semua mode (words, practice, dan time jika semua kata habis)
+    const isLastWord = state.currentWordIndex === state.words.length - 1;
+    const isWordComplete = newInput === currentWord;
 
-      if (isLastWord && isWordComplete) {
-        const typoCount = newKeystrokes.filter((k) => !k.correct).length;
-        const wordResult = {
-          expected: currentWord,
-          typed: newInput,
-          correct: true,
-          startTime: state.currentWordStartTime || now,
-          endTime: now,
-          keystrokes: newKeystrokes,
-          typoCount,
-          hand: getWordHand(currentWord),
-        };
+    if (isLastWord && isWordComplete && currentWord) {
+      const typoCount = newKeystrokes.filter((k) => !k.correct).length;
+      const wordResult = {
+        expected: currentWord,
+        typed: newInput,
+        correct: true,
+        startTime: state.currentWordStartTime || now,
+        endTime: now,
+        keystrokes: newKeystrokes,
+        typoCount,
+        hand: getWordHand(currentWord),
+      };
 
-        set({
-          wordResults: [...state.wordResults, wordResult],
-          currentWordIndex: state.currentWordIndex + 1,
-        });
-        get().finishTest();
-      }
+      set({
+        wordResults: [...state.wordResults, wordResult],
+        currentWordIndex: state.currentWordIndex + 1,
+      });
+      get().finishTest();
     }
   },
 

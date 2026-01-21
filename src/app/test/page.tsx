@@ -50,13 +50,17 @@ export default function TestPage() {
   // Focus management
   useEffect(() => {
     setFocusMode(true);
-    if (containerRef.current) {
-      containerRef.current.focus();
-    }
     return () => {
       setFocusMode(false);
     };
   }, [setFocusMode]);
+
+  // Auto-focus saat status running (setelah loading selesai)
+  useEffect(() => {
+    if (status === 'running' && containerRef.current) {
+      containerRef.current.focus();
+    }
+  }, [status]);
 
   // Navigate ke results saat finished
   useEffect(() => {
