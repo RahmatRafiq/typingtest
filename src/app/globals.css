@@ -1,110 +1,252 @@
 @import "tailwindcss";
 
 :root {
-  --background: #030712;
-  --foreground: #f9fafb;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  /* Sketch Theme - Aged Notebook Paper */
+  /* Background colors - vintage/aged paper look */
+  --paper: #d8cdb8;            /* Aged paper - warm tan */
+  --paper-dark: #c9bda6;       /* Darker aged paper */
+  --paper-line: #a89880;       /* Faded notebook lines */
+
+  /* Text colors - high contrast for readability */
+  --pencil: #1a1a1a;           /* Main text: very dark */
+  --pencil-light: #3d3d3d;     /* Secondary text: dark gray */
+
+  /* Accent colors - rich and readable */
+  --ink-blue: #1a4080;         /* Primary accent: deep blue */
+  --ink-blue-light: #2d5a9e;
+  --pencil-red: #8b2020;       /* Error/wrong: deep red */
+  --pencil-green: #1e5028;     /* Success/correct: forest green */
+  --pencil-yellow: #7a5a00;    /* Warning/highlight: dark gold */
+  --pencil-orange: #8a4a10;    /* Accent: burnt orange */
+  --pencil-purple: #4a2070;    /* Accent: deep purple */
+
+  --background: var(--paper);
+  --foreground: var(--pencil);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sketch);
+  --font-mono: var(--font-sketch-mono);
 }
 
+/* Paper texture background with hand-drawn grid */
 body {
-  background: var(--background);
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.15), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(59, 130, 246, 0.1), transparent),
-    radial-gradient(ellipse 50% 30% at 10% 80%, rgba(147, 51, 234, 0.08), transparent);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  background-color: var(--paper);
+  color: var(--pencil);
+  font-family: var(--font-sketch), 'Comic Sans MS', cursive;
   min-height: 100vh;
+  position: relative;
+
+  /* Notebook paper lines */
+  background-image:
+    /* Horizontal lines */
+    repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      var(--paper-line) 31px,
+      var(--paper-line) 32px
+    ),
+    /* Red margin line - faded vintage look */
+    linear-gradient(
+      90deg,
+      transparent 60px,
+      #c08080 60px,
+      #c08080 62px,
+      transparent 62px
+    ),
+    /* Paper texture noise */
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  background-size: 100% 32px, 100% 100%, 200px 200px;
+  background-blend-mode: normal, normal, soft-light;
 }
 
-/* Liquid Glass / Glassmorphism Styles */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow);
+/* SVG filter for hand-drawn wobbly effect */
+.sketch-filter {
+  filter: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='sketchy'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.03' numOctaves='3' result='noise' seed='0'/%3E%3CfeDisplacementMap in='SourceGraphic' in2='noise' scale='2' xChannelSelector='R' yChannelSelector='G'/%3E%3C/filter%3E%3C/svg%3E#sketchy");
 }
 
-.glass-subtle {
-  background: rgba(255, 255, 255, 0.02);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.glass-strong {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Notebook paper card style */
+.sketch-card {
+  background: var(--paper);
+  border: 2px solid var(--pencil);
+  border-radius: 3px;
+  position: relative;
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
+    3px 3px 0 var(--pencil-light),
+    inset 0 0 30px rgba(0,0,0,0.02);
 
-.glass-card {
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.05) 0%,
-    rgba(255, 255, 255, 0.02) 100%
+  /* Hand-drawn border effect using clip-path */
+  clip-path: polygon(
+    0% 2%, 2% 0%, 5% 1%, 8% 0%, 12% 2%, 15% 0%, 20% 1%, 25% 0%, 30% 2%, 35% 0%,
+    40% 1%, 45% 0%, 50% 2%, 55% 0%, 60% 1%, 65% 0%, 70% 2%, 75% 0%, 80% 1%, 85% 0%,
+    90% 2%, 95% 0%, 98% 1%, 100% 2%, 99% 5%, 100% 10%, 99% 15%, 100% 20%, 99% 25%,
+    100% 30%, 99% 35%, 100% 40%, 99% 45%, 100% 50%, 99% 55%, 100% 60%, 99% 65%,
+    100% 70%, 99% 75%, 100% 80%, 99% 85%, 100% 90%, 99% 95%, 100% 98%, 98% 100%,
+    95% 99%, 90% 100%, 85% 99%, 80% 100%, 75% 99%, 70% 100%, 65% 99%, 60% 100%,
+    55% 99%, 50% 100%, 45% 99%, 40% 100%, 35% 99%, 30% 100%, 25% 99%, 20% 100%,
+    15% 99%, 10% 100%, 5% 99%, 2% 100%, 0% 98%, 1% 95%, 0% 90%, 1% 85%, 0% 80%,
+    1% 75%, 0% 70%, 1% 65%, 0% 60%, 1% 55%, 0% 50%, 1% 45%, 0% 40%, 1% 35%,
+    0% 30%, 1% 25%, 0% 20%, 1% 15%, 0% 10%, 1% 5%
   );
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
-.glass-header {
-  background: linear-gradient(
-    180deg,
-    rgba(17, 17, 17, 0.85) 0%,
-    rgba(17, 17, 17, 0.75) 100%
-  );
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+/* Simpler sketch card without clip-path for nested elements */
+.sketch-card-simple {
+  background: var(--paper);
+  border: 2px solid var(--pencil);
+  border-radius: 2px;
+  position: relative;
+  box-shadow: 2px 2px 0 var(--pencil-light);
 }
 
-.glass-button {
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.3s ease;
+/* Hand-drawn underline effect */
+.sketch-underline {
+  position: relative;
+  display: inline-block;
 }
 
-.glass-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+.sketch-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -2px;
+  right: -2px;
+  height: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 6'%3E%3Cpath d='M0 3 Q 10 1, 20 3 T 40 3 T 60 3 T 80 3 T 100 3' stroke='%231a4080' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50px 6px;
 }
 
-.glass-input {
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Sketch button style */
+.sketch-button {
+  background: var(--paper);
+  border: 2px solid var(--pencil);
+  border-radius: 2px;
+  padding: 8px 16px;
+  font-weight: 600;
+  position: relative;
+  transition: all 0.15s ease;
+  box-shadow: 2px 2px 0 var(--pencil);
 }
 
-.glass-input:focus {
-  border-color: rgba(250, 204, 21, 0.5);
-  box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.1);
+.sketch-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--pencil);
+}
+
+.sketch-button:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--pencil);
+}
+
+.sketch-button-primary {
+  background: var(--ink-blue);
+  color: var(--paper);
+  border-color: var(--pencil);
+}
+
+.sketch-button-primary:hover {
+  background: var(--ink-blue-light);
+}
+
+/* Pencil-style input */
+.sketch-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px dashed var(--pencil-light);
+  padding: 8px 4px;
+  font-family: inherit;
+  transition: border-color 0.2s ease;
+}
+
+.sketch-input:focus {
+  outline: none;
+  border-bottom-style: solid;
+  border-color: var(--ink-blue);
+}
+
+/* Doodle decorations */
+.doodle-star {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2 L14 8 L20 9 L15 14 L17 21 L12 17 L7 21 L9 14 L4 9 L10 8 Z' stroke='%237a5a00' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.doodle-arrow {
+  display: inline-block;
+  width: 30px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20'%3E%3Cpath d='M2 10 Q 10 8, 20 10 T 35 10 M30 5 L38 10 L30 15' stroke='%231a4080' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.doodle-circle {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cellipse cx='12' cy='12' rx='10' ry='9' stroke='%238b2020' stroke-width='2' fill='none' transform='rotate(-5 12 12)'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+.doodle-checkmark {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4 12 L10 18 L20 6' stroke='%231e5028' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+}
+
+/* Spiral binding decoration */
+.spiral-binding {
+  position: relative;
+}
+
+.spiral-binding::before {
+  content: '';
+  position: absolute;
+  left: 40px;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 40'%3E%3Cellipse cx='15' cy='20' rx='12' ry='8' stroke='%233d3d3d' stroke-width='2' fill='none'/%3E%3C/svg%3E") repeat-y;
+  background-size: 30px 40px;
+  pointer-events: none;
 }
 
 /* Animations */
+@keyframes pencil-draw {
+  0% {
+    stroke-dashoffset: 100;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes wobble {
+  0%, 100% {
+    transform: rotate(-1deg);
+  }
+  50% {
+    transform: rotate(1deg);
+  }
+}
+
+@keyframes scribble {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-1px);
+  }
+  75% {
+    transform: translateX(1px);
+  }
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -116,23 +258,12 @@ body {
   }
 }
 
-@keyframes pulse {
+@keyframes cursor-blink {
   0%, 100% {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes slideUp {
-  from {
     opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -140,44 +271,67 @@ body {
   animation: fadeIn 0.3s ease-out forwards;
 }
 
-.animate-pulse {
-  animation: pulse 1s ease-in-out infinite;
+.animate-wobble {
+  animation: wobble 0.3s ease-in-out;
 }
 
-.animate-slideUp {
-  animation: slideUp 0.4s ease-out forwards;
+.animate-cursor {
+  animation: cursor-blink 0.8s ease-in-out infinite;
 }
 
-/* Custom scrollbar */
+/* Typing area specific styles */
+.typing-word {
+  transition: all 0.15s ease;
+}
+
+.typing-char-correct {
+  color: var(--pencil-green);
+}
+
+.typing-char-incorrect {
+  color: var(--pencil-red);
+  text-decoration: line-through;
+  text-decoration-style: wavy;
+  text-decoration-color: var(--pencil-red);
+}
+
+.typing-char-current {
+  border-left: 2px solid var(--ink-blue);
+  margin-left: -1px;
+  padding-left: 1px;
+  animation: cursor-blink 0.8s ease-in-out infinite;
+}
+
+/* Custom scrollbar - pencil style */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1f2937;
-  border-radius: 4px;
+  background: var(--paper-dark);
+  border-left: 1px dashed var(--pencil-light);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #4b5563;
-  border-radius: 4px;
+  background: var(--pencil-light);
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+  background: var(--pencil);
 }
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid #facc15;
-  outline-offset: 2px;
+  outline: 2px dashed var(--ink-blue);
+  outline-offset: 3px;
 }
 
 /* Selection */
 ::selection {
-  background: #facc15;
-  color: #030712;
+  background: var(--pencil-yellow);
+  color: var(--pencil);
 }
 
 /* Screen reader only class */
@@ -193,81 +347,506 @@ body {
   border-width: 0;
 }
 
-/* Typing area specific styles */
-.typing-word {
-  transition: all 0.15s ease;
-}
-
-.typing-char-correct {
-  color: #4ade80;
-}
-
-.typing-char-incorrect {
-  color: #f87171;
-  background-color: rgba(248, 113, 113, 0.2);
-}
-
-.typing-char-current {
-  border-left: 2px solid #facc15;
-  animation: pulse 1s ease-in-out infinite;
-}
-
 /* Table styles */
 table {
   border-collapse: collapse;
 }
 
 th {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Handwritten text style */
+.handwritten {
+  font-family: var(--font-sketch), 'Comic Sans MS', cursive;
+  font-weight: 400;
+}
+
+.handwritten-bold {
+  font-weight: 700;
+}
+
+/* Pencil highlight effect */
+.highlight-yellow {
+  background: linear-gradient(180deg, transparent 60%, rgba(212, 160, 32, 0.3) 60%);
+  padding: 0 4px;
+}
+
+.highlight-blue {
+  background: linear-gradient(180deg, transparent 60%, rgba(44, 90, 160, 0.2) 60%);
+  padding: 0 4px;
+}
+
+/* Crossed out text */
+.crossed-out {
+  text-decoration: line-through;
+  text-decoration-color: var(--pencil-red);
+  text-decoration-thickness: 2px;
+}
+
+/* Corner fold effect */
+.corner-fold {
+  position: relative;
+}
+
+.corner-fold::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, transparent 50%, var(--paper-dark) 50%);
+  border-left: 1px solid var(--pencil-light);
+  border-bottom: 1px solid var(--pencil-light);
+}
+
+/* Tape effect for decorative elements */
+.tape {
+  position: relative;
+}
+
+.tape::before {
+  content: '';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-2deg);
+  width: 80px;
+  height: 25px;
+  background: rgba(255, 248, 220, 0.8);
+  border: 1px solid rgba(200, 190, 160, 0.5);
+}
+
+/* Sketch header style */
+.sketch-header {
+  background: var(--paper);
+  border-bottom: 2px solid var(--pencil);
+  box-shadow: 0 2px 0 var(--pencil-light);
+}
+
+/* Progress bar sketch style */
+.sketch-progress {
+  background: var(--paper-dark);
+  border: 2px solid var(--pencil);
+  border-radius: 2px;
+  height: 12px;
+  overflow: hidden;
+}
+
+.sketch-progress-bar {
+  height: 100%;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ink-blue),
+    var(--ink-blue) 5px,
+    var(--ink-blue-light) 5px,
+    var(--ink-blue-light) 10px
+  );
+  transition: width 0.3s ease;
+}
+
+/* Badge/tag sketch style */
+.sketch-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 2px solid currentColor;
+  border-radius: 2px;
+  font-size: 0.75rem;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-/* Button transitions */
-button {
-  transition: all 0.2s ease;
+/* Stat card for results */
+.sketch-stat {
+  text-align: center;
+  padding: 1.5rem;
+  border: 2px solid var(--pencil);
+  background: var(--paper);
+  position: relative;
 }
 
-button:active {
-  transform: scale(0.98);
+.sketch-stat::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  left: 10%;
+  right: 10%;
+  height: 10px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0 8 Q 25 2, 50 8 T 100 8' stroke='%231a1a1a' stroke-width='1' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50px 10px;
 }
 
 /* Link styles */
 a {
-  transition: color 0.2s ease;
+  color: var(--ink-blue);
+  text-decoration: none;
+  position: relative;
 }
 
-/* Card hover effect */
-.card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+a:hover {
+  color: var(--ink-blue-light);
 }
 
-.card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+/* Divider sketch style */
+.sketch-divider {
+  border: none;
+  height: 2px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 4'%3E%3Cpath d='M0 2 Q 10 0, 20 2 T 40 2 T 60 2 T 80 2 T 100 2' stroke='%233d3d3d' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") repeat-x;
+  background-size: 50px 4px;
+  margin: 1rem 0;
 }
 
-/* Gradient text */
-.gradient-text {
-  background: linear-gradient(90deg, #facc15, #4ade80);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Tooltip sketch style */
+.sketch-tooltip {
+  background: var(--paper);
+  border: 2px solid var(--pencil);
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  box-shadow: 2px 2px 0 var(--pencil-light);
 }
 
-/* Loading spinner */
+/* Loading spinner - pencil spin */
 .spinner {
-  border: 2px solid #1f2937;
-  border-top: 2px solid #facc15;
+  width: 24px;
+  height: 24px;
+  border: 2px dashed var(--pencil-light);
+  border-top-color: var(--pencil);
   border-radius: 50%;
-  width: 20px;
-  height: 20px;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
+  to {
     transform: rotate(360deg);
   }
+}
+
+/* Nav active indicator - hand-drawn circle */
+.nav-active {
+  position: relative;
+}
+
+.nav-active::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--ink-blue);
+  border-radius: 50%;
+  transform: rotate(-3deg);
+}
+
+/* Number circle */
+.number-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 2px solid var(--pencil);
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+/* Strikethrough animation for completed items */
+@keyframes strike {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-strike {
+  position: relative;
+}
+
+.animate-strike::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  background: var(--pencil-red);
+  animation: strike 0.3s ease-out forwards;
+}
+
+/* ======================================
+   GLASS CLASSES - Sketch Theme Compatible
+   ====================================== */
+
+/* Glass card - sketch version */
+.glass-card {
+  background: var(--paper-dark);
+  border: 2px solid var(--pencil);
+  border-radius: 8px;
+  box-shadow: 3px 3px 0 var(--pencil-light);
+}
+
+/* Glass card subtle */
+.glass-subtle {
+  background: var(--paper);
+  border: 2px dashed var(--pencil-light);
+  border-radius: 8px;
+}
+
+/* Glass button */
+.glass-button {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.glass-button:hover {
+  border-color: var(--pencil);
+  box-shadow: 2px 2px 0 var(--pencil-light);
+}
+
+/* Glass input */
+.glass-input {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+}
+
+.glass-input:focus {
+  border-color: var(--ink-blue);
+  box-shadow: 0 0 0 2px var(--ink-blue-light);
+}
+
+/* Glass plain */
+.glass {
+  background: var(--paper);
+  border: 2px solid var(--pencil-light);
+  border-radius: 8px;
+}
+
+/* Override Tailwind text colors for sketch theme */
+.text-white {
+  color: var(--pencil) !important;
+}
+
+.text-gray-400 {
+  color: var(--pencil-light) !important;
+}
+
+.text-gray-300 {
+  color: var(--pencil) !important;
+}
+
+.text-gray-500 {
+  color: var(--pencil-light) !important;
+}
+
+.text-gray-200 {
+  color: var(--pencil) !important;
+}
+
+/* Override accent colors */
+.text-yellow-400 {
+  color: var(--pencil-yellow) !important;
+}
+
+.text-green-400 {
+  color: var(--pencil-green) !important;
+}
+
+.text-blue-400 {
+  color: var(--ink-blue) !important;
+}
+
+.text-purple-400 {
+  color: var(--pencil-purple) !important;
+}
+
+.text-red-400 {
+  color: var(--pencil-red) !important;
+}
+
+.text-orange-400 {
+  color: var(--pencil-orange) !important;
+}
+
+/* Background overrides for badges */
+.bg-yellow-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 20%, transparent) !important;
+}
+
+.bg-green-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-green) 20%, transparent) !important;
+}
+
+.bg-red-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+.bg-blue-500\/20 {
+  background-color: color-mix(in srgb, var(--ink-blue) 20%, transparent) !important;
+}
+
+.bg-purple-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-purple) 20%, transparent) !important;
+}
+
+.bg-orange-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-orange) 20%, transparent) !important;
+}
+
+.bg-gray-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-light) 20%, transparent) !important;
+}
+
+/* Yellow button overrides */
+.bg-yellow-400 {
+  background-color: var(--pencil-yellow) !important;
+  color: var(--paper) !important;
+}
+
+.bg-yellow-400:hover,
+.hover\:bg-yellow-300:hover {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 85%, white) !important;
+}
+
+/* Chart grid and axis colors */
+.recharts-cartesian-grid line {
+  stroke: var(--paper-line) !important;
+}
+
+.recharts-xAxis line,
+.recharts-yAxis line,
+.recharts-xAxis .recharts-cartesian-axis-tick-value,
+.recharts-yAxis .recharts-cartesian-axis-tick-value {
+  stroke: var(--pencil-light) !important;
+  fill: var(--pencil-light) !important;
+}
+
+/* Table border overrides */
+.border-white\/5 {
+  border-color: var(--paper-line) !important;
+}
+
+.border-white\/10 {
+  border-color: var(--paper-line) !important;
+}
+
+/* Hover background */
+.hover\:bg-white\/5:hover {
+  background-color: var(--paper-dark) !important;
+}
+
+/* Progress bar background */
+.bg-gray-800 {
+  background-color: var(--paper-line) !important;
+}
+
+/* Gradient text fix */
+.from-green-500 {
+  --tw-gradient-from: var(--pencil-green) !important;
+}
+
+.to-green-400 {
+  --tw-gradient-to: var(--pencil-green) !important;
+}
+
+/* Icon background overrides */
+.bg-yellow-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-yellow) 25%, transparent) !important;
+}
+
+.bg-green-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-green) 25%, transparent) !important;
+}
+
+.bg-blue-400\/20 {
+  background-color: color-mix(in srgb, var(--ink-blue) 25%, transparent) !important;
+}
+
+.bg-red-400\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 25%, transparent) !important;
+}
+
+/* More text color overrides */
+.text-gray-700 {
+  color: var(--pencil) !important;
+}
+
+.text-gray-900 {
+  color: var(--pencil) !important;
+}
+
+/* Border color overrides */
+.border-gray-700 {
+  border-color: var(--pencil-light) !important;
+}
+
+.border-red-500\/20 {
+  border-color: color-mix(in srgb, var(--pencil-red) 30%, transparent) !important;
+}
+
+.border-red-500\/30 {
+  border-color: color-mix(in srgb, var(--pencil-red) 40%, transparent) !important;
+}
+
+.border-yellow-500\/30 {
+  border-color: color-mix(in srgb, var(--pencil-yellow) 40%, transparent) !important;
+}
+
+/* Background solid overrides */
+.bg-black\/50 {
+  background-color: color-mix(in srgb, var(--pencil) 30%, var(--paper)) !important;
+}
+
+.bg-black\/70 {
+  background-color: color-mix(in srgb, var(--pencil) 50%, var(--paper)) !important;
+}
+
+/* Red button background */
+.bg-red-500\/20 {
+  background-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+.bg-red-500\/10 {
+  background-color: color-mix(in srgb, var(--pencil-red) 15%, transparent) !important;
+}
+
+.bg-red-600 {
+  background-color: var(--pencil-red) !important;
+}
+
+.hover\:bg-red-500\/30:hover {
+  background-color: color-mix(in srgb, var(--pencil-red) 30%, transparent) !important;
+}
+
+.hover\:bg-red-700:hover {
+  background-color: color-mix(in srgb, var(--pencil-red) 90%, black) !important;
+}
+
+/* Focus ring */
+.focus\:border-red-500:focus {
+  border-color: var(--pencil-red) !important;
+}
+
+.focus\:ring-red-500\/20:focus {
+  --tw-ring-color: color-mix(in srgb, var(--pencil-red) 20%, transparent) !important;
+}
+
+/* Placeholder text */
+.placeholder-gray-600::placeholder {
+  color: var(--pencil-light) !important;
+}
+
+/* Modal background blur styling */
+.backdrop-blur-2xl {
+  background-color: var(--paper) !important;
+  border: 2px solid var(--pencil) !important;
+}
+
+/* Hover states for gray buttons */
+.hover\:bg-gray-700:hover {
+  background-color: var(--paper-dark) !important;
 }

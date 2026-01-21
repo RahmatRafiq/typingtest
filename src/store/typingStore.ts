@@ -33,6 +33,8 @@ export const useTypingStore = create<TypingState>()(
       testHistory: [],
       wpmHistory: [],
       isPractice: false,
+      soundEnabled: true,
+      soundVolume: 0.5,
 
       ...createSettingsSlice(set, get),
       ...createInputSlice(set, get),
@@ -46,6 +48,8 @@ export const useTypingStore = create<TypingState>()(
       partialize: (state) => ({
         problemWords: state.problemWords,
         testHistory: state.testHistory,
+        soundEnabled: state.soundEnabled,
+        soundVolume: state.soundVolume,
       }),
     }
   )

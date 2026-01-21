@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import { useFocus } from '@/context/FocusContext';
 import { calculateWpm, calculateAccuracy, countCorrectChars } from '@/lib/calculations';
+import { playKeystroke, playSpaceSound, playBackspaceSound, initAudio, setEnabled, setVolume } from '@/lib/typeSound';
 
 export default function TypingArea() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,9 +30,16 @@ export default function TypingArea() {
     startTest,
     tick,
     resetTest,
+    soundEnabled,
+    soundVolume,
   } = useTypingStore();
 
-  // Focus mode: sembunyikan header saat typing
+  // Sync sound settings with utility
+  useEffect(() => {
+    setEnabled(soundEnabled);
+    setVolume(soundVolume);
+  }, [soundEnabled, soundVolume]);
+
   useEffect(() => {
     if (status === 'running') {
       setFocusMode(true);
@@ -39,19 +47,16 @@ export default function TypingArea() {
         containerRef.current.focus();
       }
     } else {
-      // Reset focus mode saat status bukan 'running' (termasuk 'finished' dan 'idle')
       setFocusMode(false);
     }
   }, [status, setFocusMode]);
 
-  // Pastikan focus mode di-reset saat komponen unmount
   useEffect(() => {
     return () => {
       setFocusMode(false);
     };
   }, [setFocusMode]);
 
-  // Redirect to results when test finishes (only on status change, not on mount)
   useEffect(() => {
     if (prevStatusRef.current === 'running' && status === 'finished') {
       router.push('/results');
@@ -60,7 +65,6 @@ export default function TypingArea() {
   }, [status, router]);
 
   useEffect(() => {
-    // Only start timer after first keystroke (when startTime is set)
     if (status !== 'running' || testMode !== 'time' || startTime === null) return;
 
     const interval = setInterval(() => {
@@ -72,7 +76,6 @@ export default function TypingArea() {
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
-      // Always check caps lock status on any key press
       setCapsLockOn(e.getModifierState('CapsLock'));
 
       if (status !== 'running') return;
@@ -85,25 +88,33 @@ export default function TypingArea() {
 
       if (e.key === 'Backspace') {
         e.preventDefault();
+        playBackspaceSound();
         handleBackspace();
         return;
       }
 
       if (e.key === ' ') {
         e.preventDefault();
+        playSpaceSound();
         handleSpace();
         return;
       }
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
+        // Determine if keystroke is correct before playing sound
+        const currentWord = words[currentWordIndex];
+        const expectedChar = currentWord?.[currentInput.length];
+        const isCorrect = e.key === expectedChar;
+        playKeystroke(isCorrect);
         handleKeyPress(e.key);
       }
     },
-    [status, handleKeyPress, handleBackspace, handleSpace, resetTest]
+    [status, handleKeyPress, handleBackspace, handleSpace, resetTest, words, currentWordIndex, currentInput]
   );
 
   const handleContainerClick = useCallback(() => {
+    initAudio(); // Initialize audio context on user interaction
     if (status === 'idle') {
       startTest();
     }
@@ -162,35 +173,37 @@ export default function TypingArea() {
       return (
         <span
           key={index}
-          className={`inline-block mr-2 sm:mr-4 mb-2 sm:mb-3 text-lg sm:text-2xl font-mono transition-all duration-150 ${isCurrentWord ? 'scale-105' : ''
-            }`}
+          className={`inline-block mr-3 sm:mr-4 mb-2 sm:mb-3 text-xl sm:text-2xl transition-all duration-150 ${
+            isCurrentWord ? 'scale-105' : ''
+          }`}
+          style={{ fontFamily: 'var(--font-sketch-mono), monospace' }}
         >
           {word.split('').map((char, charIndex) => {
-            let className = 'text-gray-500';
+            let className = 'text-[var(--pencil-light)]';
 
             if (isCompleted && wordResult) {
               if (wordResult.correct) {
-                className = 'text-green-400';
+                className = 'text-[var(--pencil-green)]';
               } else {
                 const typedChar = wordResult.typed[charIndex];
                 if (typedChar === char) {
-                  className = 'text-green-400';
+                  className = 'text-[var(--pencil-green)]';
                 } else if (typedChar) {
-                  className = 'text-red-500';
+                  className = 'text-[var(--pencil-red)] line-through decoration-wavy';
                 } else {
-                  className = 'text-red-500/50';
+                  className = 'text-[var(--pencil-red)] opacity-50';
                 }
               }
             } else if (isCurrentWord) {
               const typedChar = currentInput[charIndex];
               if (charIndex < currentInput.length) {
                 if (typedChar === char) {
-                  className = 'text-green-400 transition-colors duration-100';
+                  className = 'text-[var(--pencil-green)] transition-colors duration-100';
                 } else {
-                  className = 'text-red-500 bg-red-500/20 rounded transition-all duration-100';
+                  className = 'text-[var(--pencil-red)] bg-[var(--pencil-red)]/10 rounded transition-all duration-100';
                 }
               } else if (charIndex === currentInput.length) {
-                className = 'text-white border-l-2 border-yellow-400 -ml-px pl-px animate-pulse transition-all duration-75';
+                className = 'text-[var(--pencil)] border-l-2 border-[var(--ink-blue)] -ml-px pl-px animate-cursor';
               }
             }
 
@@ -201,7 +214,7 @@ export default function TypingArea() {
             );
           })}
           {isCurrentWord && currentInput.length > word.length && (
-            <span className="text-red-500 bg-red-500/20 rounded">
+            <span className="text-[var(--pencil-red)] bg-[var(--pencil-red)]/10 rounded">
               {currentInput.slice(word.length)}
             </span>
           )}
@@ -224,19 +237,48 @@ export default function TypingArea() {
             startTest();
           }
         }}
-        className="glass-strong rounded-2xl min-h-[180px] sm:min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none"
+        className="sketch-card-simple p-6 sm:p-8 min-h-[180px] sm:min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none"
       >
         <div className="text-center px-4">
-          <p className="text-gray-300 text-base sm:text-xl mb-2 sm:mb-3 group-hover:text-white transition-colors">
-            Klik di sini atau tekan Spasi untuk mulai
+          {/* Hand-drawn arrow pointing down */}
+          <div className="flex justify-center mb-4">
+            <svg width="60" height="40" viewBox="0 0 60 40" className="animate-bounce">
+              <path
+                d="M30 5 Q 28 15, 30 25 M20 20 Q 25 28, 30 30 Q 35 28, 40 20"
+                stroke="var(--ink-blue)"
+                strokeWidth="2.5"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <p
+            className="text-[var(--pencil)] text-lg sm:text-2xl mb-2 sm:mb-3 group-hover:text-[var(--ink-blue)] transition-colors"
+            style={{ fontFamily: 'var(--font-sketch), cursive' }}
+          >
+            Klik di sini atau tekan tombol apa saja untuk mulai!
           </p>
-          <p className="text-gray-500 text-xs sm:text-sm">
+          <p
+            className="text-[var(--pencil-light)] text-sm sm:text-base"
+            style={{ fontFamily: 'var(--font-sketch), cursive' }}
+          >
             Tekan Tab untuk restart kapan saja
           </p>
-          <div className="mt-4 sm:mt-6 hidden sm:flex gap-4 justify-center text-gray-500 text-xs">
-            <span className="px-3 py-1.5 glass rounded-lg">Spasi = mulai/lanjut</span>
-            <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
-            <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
+
+          {/* Keyboard shortcuts as sketch badges */}
+          <div className="mt-6 hidden sm:flex gap-3 justify-center flex-wrap">
+            <span className="sketch-badge text-[var(--pencil-light)]">Spasi = lanjut</span>
+            <span className="sketch-badge text-[var(--pencil-light)]">Backspace = hapus</span>
+            <span className="sketch-badge text-[var(--pencil-light)]">Tab = restart</span>
+          </div>
+
+          {/* Decorative doodles */}
+          <div className="absolute top-4 right-4 opacity-40">
+            <span className="doodle-star" />
+          </div>
+          <div className="absolute bottom-4 left-4 opacity-40">
+            <span className="doodle-checkmark" />
           </div>
         </div>
       </div>
@@ -257,76 +299,140 @@ export default function TypingArea() {
       onMouseDown={handleMouseDown}
       className="relative focus:outline-none select-none"
     >
-      {/* Caps Lock Warning - Fixed position overlay */}
+      {/* Caps Lock Warning - Sketch style */}
       {capsLockOn && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] animate-pulse pointer-events-none">
-          <div className="flex items-center gap-3 px-6 py-3 rounded-xl bg-yellow-500/30 border-2 border-yellow-400 backdrop-blur-md shadow-2xl">
-            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] animate-wobble pointer-events-none">
+          <div className="flex items-center gap-3 px-6 py-3 sketch-card-simple border-[var(--pencil-yellow)] bg-[var(--pencil-yellow)]/20">
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path
+                d="M12 3 L20 19 L4 19 Z M12 8 L12 13 M12 16 L12 17"
+                stroke="var(--pencil-yellow)"
+                strokeWidth="2"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
-            <span className="text-yellow-400 text-base font-bold uppercase tracking-wider">Caps Lock Aktif!</span>
-            <svg className="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L1 21h22L12 2zm0 3.5L19.5 19h-15L12 5.5zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z"/>
-            </svg>
+            <span
+              className="text-[var(--pencil)] text-base font-bold uppercase tracking-wider"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              Caps Lock Aktif!
+            </span>
           </div>
         </div>
       )}
 
-      <div className="glass-card rounded-2xl p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
-        <div className="flex gap-4 sm:gap-8">
-          <div>
-            <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">WPM</span>
-            <div className="text-yellow-400 font-bold text-xl sm:text-2xl">{liveWpm}</div>
+      {/* Stats bar - Sketch style */}
+      <div className="sketch-card-simple p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
+        <div className="flex gap-6 sm:gap-10">
+          <div className="text-center">
+            <span
+              className="text-[var(--pencil-light)] text-xs sm:text-sm uppercase tracking-wide block"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              WPM
+            </span>
+            <div
+              className="text-[var(--ink-blue)] font-bold text-2xl sm:text-3xl"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              {liveWpm}
+            </div>
           </div>
-          <div>
-            <span className="text-gray-400 text-xs sm:text-sm uppercase tracking-wide">Akurasi</span>
-            <div className="text-green-400 font-bold text-xl sm:text-2xl">{liveAccuracy}%</div>
+          <div className="text-center">
+            <span
+              className="text-[var(--pencil-light)] text-xs sm:text-sm uppercase tracking-wide block"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              Akurasi
+            </span>
+            <div
+              className="text-[var(--pencil-green)] font-bold text-2xl sm:text-3xl"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              {liveAccuracy}%
+            </div>
           </div>
         </div>
+
         <div className="flex items-center gap-3 sm:gap-4">
           {testMode === 'time' && (
-            <div className="text-2xl sm:text-4xl font-bold text-yellow-400">
+            <div
+              className="text-3xl sm:text-5xl font-bold text-[var(--ink-blue)]"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
               {timeRemaining}
+              <span className="text-lg ml-1 text-[var(--pencil-light)]">detik</span>
             </div>
           )}
           {testMode === 'words' && (
-            <div className="text-sm sm:text-lg text-gray-400">
-              <span className="text-white font-bold">{currentWordIndex}</span> / {words.length}
+            <div
+              className="text-lg sm:text-xl text-[var(--pencil-light)]"
+              style={{ fontFamily: 'var(--font-sketch), cursive' }}
+            >
+              <span className="text-[var(--pencil)] font-bold text-2xl">{currentWordIndex}</span>
+              <span className="mx-1">/</span>
+              {words.length}
             </div>
           )}
         </div>
       </div>
 
-      <div className="hidden sm:flex gap-3 mb-4 text-xs text-gray-500">
-        <span className="px-3 py-1.5 glass rounded-lg">Spasi = mulai/lanjut</span>
-        <span className="px-3 py-1.5 glass rounded-lg">Backspace = hapus</span>
-        <span className="px-3 py-1.5 glass rounded-lg">Tab = restart</span>
+      {/* Keyboard shortcuts */}
+      <div className="hidden sm:flex gap-3 mb-4 text-xs">
+        <span className="sketch-badge text-[var(--pencil-light)]">Spasi = lanjut</span>
+        <span className="sketch-badge text-[var(--pencil-light)]">Backspace = hapus</span>
+        <span className="sketch-badge text-[var(--pencil-light)]">Tab = restart</span>
       </div>
 
-      <div className="relative glass-strong rounded-2xl p-4 sm:p-8 min-h-[150px] sm:min-h-[180px] overflow-hidden">
-        <div className="flex flex-wrap leading-relaxed">
+      {/* Main typing area - Notebook paper style */}
+      <div className="relative sketch-card-simple p-4 sm:p-8 min-h-[150px] sm:min-h-[180px] overflow-hidden">
+        {/* Notebook margin line */}
+        <div
+          className="absolute left-12 top-0 bottom-0 w-0.5 opacity-30"
+          style={{ backgroundColor: '#c08080' }}
+        />
+
+        <div className="flex flex-wrap leading-relaxed pl-6">
           {words.slice(0, Math.min(currentWordIndex + 20, words.length)).map((word, index) =>
             renderWord(word, index)
           )}
         </div>
 
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-950/80 opacity-0 hover:opacity-100 transition-opacity pointer-events-none rounded-2xl">
-          <span className="text-gray-400">Klik untuk fokus</span>
+        {/* Focus overlay */}
+        <div className="absolute inset-0 flex items-center justify-center bg-[var(--paper)]/90 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
+          <span
+            className="text-[var(--pencil-light)]"
+            style={{ fontFamily: 'var(--font-sketch), cursive' }}
+          >
+            Klik untuk fokus
+          </span>
         </div>
       </div>
 
-      <div className="mt-4 sm:mt-6 h-1 sm:h-1.5 glass rounded-full overflow-hidden">
+      {/* Progress bar - Sketch style */}
+      <div className="mt-4 sm:mt-6 sketch-progress">
         <div
-          className="h-full bg-gradient-to-r from-yellow-400 to-green-400 transition-all duration-300"
+          className="sketch-progress-bar"
           style={{
             width: `${(currentWordIndex / words.length) * 100}%`,
           }}
         />
       </div>
 
+      {/* Current word indicator */}
       <div className="mt-3 sm:mt-4 text-center">
-        <span className="text-gray-500 text-xs sm:text-sm">Kata saat ini: </span>
-        <span className="text-white font-mono text-base sm:text-lg">
+        <span
+          className="text-[var(--pencil-light)] text-sm sm:text-base"
+          style={{ fontFamily: 'var(--font-sketch), cursive' }}
+        >
+          Kata saat ini:{' '}
+        </span>
+        <span
+          className="text-[var(--pencil)] text-lg sm:text-xl highlight-yellow"
+          style={{ fontFamily: 'var(--font-sketch-mono), monospace' }}
+        >
           {words[currentWordIndex] || ''}
         </span>
       </div>
