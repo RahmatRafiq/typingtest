@@ -13,5 +13,6 @@ export function useResetOnMount() {
       resetTest();
       setFocusMode(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

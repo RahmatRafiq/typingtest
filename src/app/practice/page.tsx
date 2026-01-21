@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
-import TypingArea from '@/components/TypingArea';
 import Link from 'next/link';
 import { WORDS } from '@/lib/words';
 import { TYPING_THRESHOLDS } from '@/lib/constants';
 import { useResetOnMount } from '@/hooks/useResetOnMount';
-import { useKeyboardShortcut } from '@/hooks/useKeyboardShortcut';
+import { initAudio } from '@/lib/typeSound';
 
 type PracticeMode = 'problem-words' | 'left-hand' | 'right-hand' | 'custom';
 
 export default function PracticePage() {
-  const { status, problemWords, startPracticeMode } = useTypingStore();
+  const router = useRouter();
+  const { problemWords, startPracticeMode } = useTypingStore();
   const [practiceMode, setPracticeMode] = useState<PracticeMode>('problem-words');
   const [wordCount, setWordCount] = useState(25);
   const [customWords, setCustomWords] = useState('');
@@ -54,34 +55,16 @@ export default function PracticePage() {
     return words;
   }, [practiceMode, wordCount, customWords, problemWords]);
 
-  const handleTabPress = useCallback(() => {
-    if (status !== 'running') {
-      const words = generateWords();
-      if (words.length > 0) {
-        startPracticeMode(words);
-      }
-    }
-  }, [status, generateWords, startPracticeMode]);
-
-  useKeyboardShortcut('Tab', handleTabPress, { preventDefault: true });
-
   const handleStartPractice = () => {
     const words = generateWords();
     if (practiceMode === 'custom' && words.length === 0) {
       alert('Silakan masukkan beberapa kata untuk dilatih');
       return;
     }
+    initAudio();
     startPracticeMode(words);
+    router.push('/test');
   };
-
-  // TypingArea akan redirect ke /results saat selesai
-  if (status === 'running') {
-    return (
-      <div className="space-y-6 sm:space-y-8">
-        <TypingArea />
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
