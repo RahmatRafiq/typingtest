@@ -1,15 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useCallback, useMemo, useState } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTypingStore } from '@/store/typingStore';
 import { useFocus } from '@/context/FocusContext';
 import { calculateWpm, calculateAccuracy, countCorrectChars } from '@/lib/calculations';
 import { playKeystroke, playSpaceSound, playBackspaceSound, initAudio, setEnabled, setVolume } from '@/lib/typeSound';
 
-export default function TypingArea() {
+export default function TestPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const prevStatusRef = useRef<string>('idle');
   const router = useRouter();
   const { setFocusMode } = useFocus();
   const [capsLockOn, setCapsLockOn] = useState(false);
@@ -34,36 +33,39 @@ export default function TypingArea() {
     soundVolume,
   } = useTypingStore();
 
-  // Sync sound settings with utility
+  // Start test otomatis saat halaman dimuat (hanya jika idle, tidak jika dari practice)
+  useEffect(() => {
+    if (status === 'idle' && words.length === 0) {
+      initAudio();
+      startTest();
+    }
+  }, [status, startTest, words.length]);
+
+  // Sync sound settings
   useEffect(() => {
     setEnabled(soundEnabled);
     setVolume(soundVolume);
   }, [soundEnabled, soundVolume]);
 
+  // Focus management
   useEffect(() => {
-    if (status === 'running') {
-      setFocusMode(true);
-      if (containerRef.current) {
-        containerRef.current.focus();
-      }
-    } else {
-      setFocusMode(false);
+    setFocusMode(true);
+    if (containerRef.current) {
+      containerRef.current.focus();
     }
-  }, [status, setFocusMode]);
-
-  useEffect(() => {
     return () => {
       setFocusMode(false);
     };
   }, [setFocusMode]);
 
+  // Navigate ke results saat finished
   useEffect(() => {
-    if (prevStatusRef.current === 'running' && status === 'finished') {
+    if (status === 'finished') {
       router.push('/results');
     }
-    prevStatusRef.current = status;
   }, [status, router]);
 
+  // Timer untuk time mode
   useEffect(() => {
     if (status !== 'running' || testMode !== 'time' || startTime === null) return;
 
@@ -74,17 +76,32 @@ export default function TypingArea() {
     return () => clearInterval(interval);
   }, [status, testMode, startTime, tick]);
 
+  // Global Tab handler - restart test tanpa navigate
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        // Hanya reset, useEffect auto-start akan memulai test baru
+        resetTest();
+        initAudio();
+        startTest();
+      }
+    };
+
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [resetTest, startTest]);
+
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       setCapsLockOn(e.getModifierState('CapsLock'));
 
-      if (status !== 'running') return;
-
+      // Tab sudah di-handle oleh global listener
       if (e.key === 'Tab') {
-        e.preventDefault();
-        resetTest();
         return;
       }
+
+      if (status !== 'running') return;
 
       if (e.key === 'Backspace') {
         e.preventDefault();
@@ -102,7 +119,6 @@ export default function TypingArea() {
 
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        // Determine if keystroke is correct before playing sound
         const currentWord = words[currentWordIndex];
         const expectedChar = currentWord?.[currentInput.length];
         const isCorrect = e.key === expectedChar;
@@ -110,18 +126,14 @@ export default function TypingArea() {
         handleKeyPress(e.key);
       }
     },
-    [status, handleKeyPress, handleBackspace, handleSpace, resetTest, words, currentWordIndex, currentInput]
+    [status, handleKeyPress, handleBackspace, handleSpace, words, currentWordIndex, currentInput]
   );
 
   const handleContainerClick = useCallback(() => {
-    initAudio(); // Initialize audio context on user interaction
-    if (status === 'idle') {
-      startTest();
-    }
     if (containerRef.current) {
       containerRef.current.focus();
     }
-  }, [status, startTest]);
+  }, []);
 
   const handleBlur = useCallback(() => {
     if (status === 'running' && containerRef.current) {
@@ -137,7 +149,7 @@ export default function TypingArea() {
     }
   }, [status]);
 
-  const liveWpm = useMemo(() => {
+  const computeLiveWpm = useCallback(() => {
     if (wordResults.length === 0 || !startTime) return 0;
     const elapsedTimeInMinutes = (Date.now() - startTime) / 1000 / 60;
     if (elapsedTimeInMinutes <= 0) return 0;
@@ -148,7 +160,7 @@ export default function TypingArea() {
     return calculateWpm(correctChars, elapsedTimeInMinutes);
   }, [wordResults, currentInput, currentWordIndex, words, startTime]);
 
-  const liveAccuracy = useMemo(() => {
+  const computeLiveAccuracy = useCallback(() => {
     const completedKeystrokes = wordResults.reduce(
       (sum, w) => sum + w.keystrokes.length,
       0
@@ -163,6 +175,9 @@ export default function TypingArea() {
 
     return calculateAccuracy(currentCorrect, currentTotal);
   }, [wordResults, currentWordKeystrokes]);
+
+  const liveWpm = computeLiveWpm();
+  const liveAccuracy = computeLiveAccuracy();
 
   const renderWord = useCallback(
     (word: string, index: number) => {
@@ -224,69 +239,18 @@ export default function TypingArea() {
     [currentWordIndex, currentInput, wordResults]
   );
 
-  if (status === 'idle') {
+  // Loading state saat test belum dimulai
+  if (status === 'idle' || words.length === 0) {
     return (
-      <div
-        ref={containerRef}
-        tabIndex={0}
-        onClick={handleContainerClick}
-        onKeyDown={(e) => {
-          setCapsLockOn(e.getModifierState('CapsLock'));
-          if (e.key !== 'Tab') {
-            e.preventDefault();
-            startTest();
-          }
-        }}
-        className="sketch-card-simple p-6 sm:p-8 min-h-[180px] sm:min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none"
-      >
-        <div className="text-center px-4">
-          {/* Hand-drawn arrow pointing down */}
-          <div className="flex justify-center mb-4">
-            <svg width="60" height="40" viewBox="0 0 60 40" className="animate-bounce">
-              <path
-                d="M30 5 Q 28 15, 30 25 M20 20 Q 25 28, 30 30 Q 35 28, 40 20"
-                stroke="var(--ink-blue)"
-                strokeWidth="2.5"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </div>
-          <p
-            className="text-[var(--pencil)] text-lg sm:text-2xl mb-2 sm:mb-3 group-hover:text-[var(--ink-blue)] transition-colors"
-            style={{ fontFamily: 'var(--font-sketch), cursive' }}
-          >
-            Klik di sini atau tekan tombol apa saja untuk mulai!
-          </p>
-          <p
-            className="text-[var(--pencil-light)] text-sm sm:text-base"
-            style={{ fontFamily: 'var(--font-sketch), cursive' }}
-          >
-            Tekan Tab untuk restart kapan saja
-          </p>
-
-          {/* Keyboard shortcuts as sketch badges */}
-          <div className="mt-6 hidden sm:flex gap-3 justify-center flex-wrap">
-            <span className="sketch-badge text-[var(--pencil-light)]">Spasi = lanjut</span>
-            <span className="sketch-badge text-[var(--pencil-light)]">Backspace = hapus</span>
-            <span className="sketch-badge text-[var(--pencil-light)]">Tab = restart</span>
-          </div>
-
-          {/* Decorative doodles */}
-          <div className="absolute top-4 right-4 opacity-40">
-            <span className="doodle-star" />
-          </div>
-          <div className="absolute bottom-4 left-4 opacity-40">
-            <span className="doodle-checkmark" />
-          </div>
-        </div>
+      <div className="flex items-center justify-center min-h-[300px]">
+        <p
+          className="text-[var(--pencil-light)] text-xl"
+          style={{ fontFamily: 'var(--font-sketch), cursive' }}
+        >
+          Memulai test...
+        </p>
       </div>
     );
-  }
-
-  if (status === 'finished') {
-    return null;
   }
 
   return (
@@ -299,7 +263,7 @@ export default function TypingArea() {
       onMouseDown={handleMouseDown}
       className="relative focus:outline-none select-none"
     >
-      {/* Caps Lock Warning - Sketch style */}
+      {/* Caps Lock Warning */}
       {capsLockOn && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[90] animate-wobble pointer-events-none">
           <div className="flex items-center gap-3 px-6 py-3 sketch-card-simple border-[var(--pencil-yellow)] bg-[var(--pencil-yellow)]/20">
@@ -323,7 +287,7 @@ export default function TypingArea() {
         </div>
       )}
 
-      {/* Stats bar - Sketch style */}
+      {/* Stats bar */}
       <div className="sketch-card-simple p-3 sm:p-4 mb-4 sm:mb-6 flex justify-between items-center">
         <div className="flex gap-6 sm:gap-10">
           <div className="text-center">
@@ -386,9 +350,8 @@ export default function TypingArea() {
         <span className="sketch-badge text-[var(--pencil-light)]">Tab = restart</span>
       </div>
 
-      {/* Main typing area - Notebook paper style */}
+      {/* Main typing area */}
       <div className="relative sketch-card-simple p-4 sm:p-8 min-h-[150px] sm:min-h-[180px] overflow-hidden">
-        {/* Notebook margin line */}
         <div
           className="absolute left-12 top-0 bottom-0 w-0.5 opacity-30"
           style={{ backgroundColor: '#c08080' }}
@@ -399,19 +362,9 @@ export default function TypingArea() {
             renderWord(word, index)
           )}
         </div>
-
-        {/* Focus overlay */}
-        <div className="absolute inset-0 flex items-center justify-center bg-[var(--paper)]/90 opacity-0 hover:opacity-100 transition-opacity pointer-events-none">
-          <span
-            className="text-[var(--pencil-light)]"
-            style={{ fontFamily: 'var(--font-sketch), cursive' }}
-          >
-            Klik untuk fokus
-          </span>
-        </div>
       </div>
 
-      {/* Progress bar - Sketch style */}
+      {/* Progress bar */}
       <div className="mt-4 sm:mt-6 sketch-progress">
         <div
           className="sketch-progress-bar"

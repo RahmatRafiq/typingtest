@@ -1,11 +1,6 @@
 import { supabase, getAnonymousUserId } from './supabase';
 import { TestSession, ProblemWord, WordResult } from '@/types';
 
-interface SyncResult {
-  success: boolean;
-  error?: string;
-}
-
 export async function syncTestSession(session: TestSession): Promise<boolean> {
   if (!supabase) return true;
 
