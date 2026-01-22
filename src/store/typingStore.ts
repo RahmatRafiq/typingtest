@@ -46,10 +46,15 @@ export const useTypingStore = create<TypingState>()(
     {
       name: 'typing-test-storage',
       partialize: (state) => ({
-        problemWords: state.problemWords,
-        testHistory: state.testHistory,
+        // User preferences (persist across sessions)
+        testMode: state.testMode,
+        handMode: state.handMode,
+        duration: state.duration,
         soundEnabled: state.soundEnabled,
         soundVolume: state.soundVolume,
+        // User data
+        problemWords: state.problemWords,
+        testHistory: state.testHistory,
       }),
     }
   )

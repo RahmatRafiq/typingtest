@@ -119,7 +119,7 @@ describe('inputSlice', () => {
       expect(afterFirstWord.currentInput).toBe(firstWord);
     });
 
-    it('tidak auto-complete di time mode', () => {
+    it('auto-complete di time mode jika semua kata habis', () => {
       const store = useTypingStore.getState();
 
       // Set mode time
@@ -132,16 +132,60 @@ describe('inputSlice', () => {
       const runningStore = useTypingStore.getState();
       const firstWord = runningStore.words[0];
 
-      // Ketik kata pertama
+      // Ketik kata pertama (bukan kata terakhir, jadi tidak auto-complete)
       for (const char of firstWord) {
         act(() => {
           useTypingStore.getState().handleKeyPress(char);
         });
       }
 
-      // Game tidak boleh selesai di time mode
+      // Game tidak boleh selesai karena bukan kata terakhir
       const afterWord = useTypingStore.getState();
       expect(afterWord.status).toBe('running');
+      // Tapi currentInput harus berisi kata yang sudah diketik
+      expect(afterWord.currentInput).toBe(firstWord);
+    });
+
+    it('auto-complete berfungsi di practice mode', () => {
+      const store = useTypingStore.getState();
+
+      // Start practice mode dengan custom words
+      const practiceWords = ['test', 'kata'];
+      act(() => {
+        store.startPracticeMode(practiceWords);
+      });
+
+      const runningStore = useTypingStore.getState();
+      expect(runningStore.status).toBe('running');
+      expect(runningStore.isPractice).toBe(true);
+      expect(runningStore.words).toEqual(practiceWords);
+
+      // Ketik kata pertama dan tekan spasi
+      const firstWord = runningStore.words[0];
+      for (const char of firstWord) {
+        act(() => {
+          useTypingStore.getState().handleKeyPress(char);
+        });
+      }
+      act(() => {
+        useTypingStore.getState().handleSpace();
+      });
+
+      // Sekarang di kata terakhir
+      expect(useTypingStore.getState().currentWordIndex).toBe(1);
+
+      // Ketik kata terakhir (harus auto-complete)
+      const lastWord = useTypingStore.getState().words[1];
+      for (const char of lastWord) {
+        act(() => {
+          useTypingStore.getState().handleKeyPress(char);
+        });
+      }
+
+      // Game harus selesai setelah huruf terakhir (tanpa spasi)
+      const finalStore = useTypingStore.getState();
+      expect(finalStore.status).toBe('finished');
+      expect(finalStore.wordResults.length).toBe(2);
     });
   });
 
