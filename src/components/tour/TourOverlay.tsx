@@ -120,7 +120,16 @@ export default function TourOverlay() {
       return;
     }
 
-    const el = document.querySelector(step.target);
+    // Find the VISIBLE element (mobile/desktop may both have same data-tour-step)
+    const elements = document.querySelectorAll(step.target);
+    let el: Element | null = null;
+    for (const candidate of elements) {
+      const r = candidate.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) {
+        el = candidate;
+        break;
+      }
+    }
     if (!el) return;
 
     const rect = el.getBoundingClientRect();
@@ -138,9 +147,13 @@ export default function TourOverlay() {
 
   useEffect(() => {
     if (step.target) {
-      const el = document.querySelector(step.target);
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const elements = document.querySelectorAll(step.target);
+      for (const candidate of elements) {
+        const r = candidate.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) {
+          candidate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          break;
+        }
       }
     }
 
