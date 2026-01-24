@@ -1,6 +1,7 @@
 'use client';
 
 import { useTypingStore } from '@/store/typingStore';
+import { useTourStore } from '@/store/tourStore';
 
 interface SettingButtonProps {
   active: boolean;
@@ -39,7 +40,7 @@ export default function Settings() {
     <div className={`sketch-card-simple p-4 sm:p-6 ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
       {/* Mobile: Vertical layout */}
       <div className="flex flex-col space-y-4 lg:hidden">
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" data-tour-step="mode-selection">
           <span
             className="text-[var(--pencil-light)] text-xs uppercase tracking-wide flex items-center gap-2"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -57,7 +58,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" data-tour-step="duration-settings">
           <span
             className="text-[var(--pencil-light)] text-xs uppercase tracking-wide"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -79,7 +80,7 @@ export default function Settings() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2" data-tour-step="hand-mode">
           <span
             className="text-[var(--pencil-light)] text-xs uppercase tracking-wide"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -148,7 +149,7 @@ export default function Settings() {
       {/* Desktop: Single horizontal row */}
       <div className="hidden lg:flex lg:items-center lg:justify-center lg:gap-8">
         {/* Mode */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" data-tour-step="mode-selection">
           <span
             className="text-[var(--pencil-light)] text-sm uppercase tracking-wide font-medium flex items-center gap-2"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -176,7 +177,7 @@ export default function Settings() {
         />
 
         {/* Duration */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" data-tour-step="duration-settings">
           <span
             className="text-[var(--pencil-light)] text-sm uppercase tracking-wide font-medium"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -208,7 +209,7 @@ export default function Settings() {
         />
 
         {/* Hand Mode */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" data-tour-step="hand-mode">
           <span
             className="text-[var(--pencil-light)] text-sm uppercase tracking-wide font-medium"
             style={{ fontFamily: 'var(--font-sketch), cursive' }}
@@ -292,6 +293,23 @@ export default function Settings() {
           </div>
         </div>
       </div>
+
+      {/* Replay Tour button */}
+      <button
+        onClick={() => {
+          useTourStore.getState().resetTour();
+          useTourStore.getState().startTour();
+        }}
+        className="absolute bottom-2 right-2 text-xs text-[var(--pencil-light)] hover:text-[var(--ink-blue)] transition-colors flex items-center gap-1 opacity-60 hover:opacity-100"
+        style={{ fontFamily: 'var(--font-sketch), cursive' }}
+        title="Ulangi tour"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+          <path d="M3 12a9 9 0 1 1 3 7" />
+          <path d="M3 22v-7h7" />
+        </svg>
+        Tour
+      </button>
 
       {/* Decorative corner doodle */}
       <div className="absolute -top-2 -right-2 opacity-30 hidden sm:block">

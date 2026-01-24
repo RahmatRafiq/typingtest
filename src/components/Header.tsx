@@ -103,6 +103,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                data-tour-step={item.href === '/analytics' ? 'nav-analytics' : undefined}
                 className={`relative px-3 py-2 sm:px-5 sm:py-2.5 transition-all duration-200 text-base sm:text-lg font-semibold ${
                   pathname === item.href
                     ? 'text-[var(--ink-blue)]'
