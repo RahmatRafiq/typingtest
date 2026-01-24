@@ -850,3 +850,88 @@ a:hover {
 .hover\:bg-gray-700:hover {
   background-color: var(--paper-dark) !important;
 }
+
+/* ===== Onboarding Tour ===== */
+.tour-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.75);
+  z-index: 200;
+}
+
+.tour-spotlight {
+  position: fixed;
+  border-radius: 4px;
+  box-shadow: 0 0 0 9999px rgba(26, 26, 26, 0.75);
+  z-index: 201;
+  transition: top 0.3s ease, left 0.3s ease, width 0.3s ease, height 0.3s ease;
+  pointer-events: none;
+}
+
+.tour-tooltip {
+  position: fixed;
+  z-index: 202;
+  background: var(--paper);
+  border: 2px solid var(--pencil);
+  box-shadow: 3px 3px 0 var(--pencil-light);
+  padding: 16px 20px;
+  animation: tourFadeIn 0.25s ease-out;
+}
+
+@keyframes tourFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) rotate(-0.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+.tour-arrow {
+  position: absolute;
+}
+
+.tour-arrow-top {
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.tour-arrow-bottom {
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.tour-arrow-left {
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.tour-arrow-right {
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.tour-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--pencil-light);
+  transition: all 0.2s ease;
+}
+
+.tour-dot-active {
+  background: var(--ink-blue);
+  border-color: var(--ink-blue);
+  transform: scale(1.3);
+}
+
+.tour-dot-completed {
+  background: var(--pencil-green);
+  border-color: var(--pencil-green);
+}

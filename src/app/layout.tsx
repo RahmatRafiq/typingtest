@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import MainWrapper from "@/components/MainWrapper";
 import SyncIndicator from "@/components/SyncIndicator";
 import { FocusProvider } from "@/context/FocusContext";
+import TourProvider from "@/components/tour/TourProvider";
 
 // Handwritten style font for headings and UI
 const caveat = Caveat({
@@ -106,6 +107,7 @@ export default function RootLayout({
             {children}
           </MainWrapper>
           <SyncIndicator />
+          <TourProvider />
         </FocusProvider>
       </body>
     </html>

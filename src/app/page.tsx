@@ -62,6 +62,7 @@ export default function Home() {
           onClick={handleStartTest}
           onKeyDown={handleKeyDown}
           onFocus={handleContainerClick}
+          data-tour-step="start-area"
           className="sketch-card-simple p-6 sm:p-8 min-h-[180px] sm:min-h-[250px] flex items-center justify-center cursor-pointer group focus:outline-none focus:ring-2 focus:ring-[var(--ink-blue)] focus:ring-offset-2 focus:ring-offset-[var(--paper)]"
         >
           <div className="text-center px-4">
