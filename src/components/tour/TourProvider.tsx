@@ -9,6 +9,7 @@ export default function TourProvider() {
   const pathname = usePathname();
   const { isTourActive, hasCompletedTour, hasSkippedTour, startTour, nextStep, prevStep, skipTour } = useTourStore();
   const [hydrated, setHydrated] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   // Wait for store hydration from localStorage
   useEffect(() => {
@@ -24,10 +25,26 @@ export default function TourProvider() {
 
     const timer = setTimeout(() => {
       startTour();
-    }, 800);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, [hydrated, pathname, hasCompletedTour, hasSkippedTour, isTourActive, startTour]);
+
+  // Manage body scroll lock and visibility
+  useEffect(() => {
+    if (isTourActive) {
+      document.body.style.overflow = 'hidden';
+      // Small delay for mount animation
+      requestAnimationFrame(() => setVisible(true));
+    } else {
+      setVisible(false);
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isTourActive]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -56,5 +73,9 @@ export default function TourProvider() {
 
   if (!hydrated || !isTourActive) return null;
 
-  return <TourOverlay />;
+  return (
+    <div className={`tour-root ${visible ? 'tour-visible' : ''}`}>
+      <TourOverlay />
+    </div>
+  );
 }
